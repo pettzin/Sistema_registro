@@ -1,7 +1,12 @@
 package Atividade;
 
 import java.util.*;
+import lombok.*;
 
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Registro {
     private Map<String, Turma> turmas;
     private Map<String, Periodos> periodos;
