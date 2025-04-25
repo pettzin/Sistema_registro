@@ -1,6 +1,8 @@
 package edu.br.cruzeirodosul;
 
-
+import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     // Códigos ANSI para cores
