@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Periodo {
+public class Curso {
     private String nome;
     private String codigo;
     private String descricao;
@@ -13,7 +13,7 @@ public class Periodo {
     private String dataFim;
 
     // Construtor simplificado
-    public Periodo(String nome, String codigo) {
+    public Curso(String nome, String codigo) {
         this.nome = nome;
         this.codigo = codigo;
         this.descricao = "";
@@ -37,7 +37,7 @@ public class Periodo {
 
     @Override
     public String toString() {
-        return "Período: " + nome + " (Código: " + codigo + ")" +
+        return "Curso: " + nome + " (Código: " + codigo + ")" +
                (descricao.isEmpty() ? "" : "\n  Descrição: " + descricao) +
                (dataInicio.isEmpty() ? "" : "\n  Data Início: " + dataInicio) +
                (dataFim.isEmpty() ? "" : "\n  Data Fim: " + dataFim);

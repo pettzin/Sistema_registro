@@ -7,14 +7,14 @@ import lombok.*;
 @AllArgsConstructor
 public class Registro {
     private Map<String, Turma> turmas;
-    private Map<String, Periodo> periodos;
+    private Map<String, Curso> cursos;
     private Map<String, Aluno> alunos;
     private Map<String, Aluno> alunosPorCpf;
     private int proximoIdAluno;
 
     public Registro() {
         this.turmas = new HashMap<>();
-        this.periodos = new HashMap<>();
+        this.cursos = new HashMap<>();
         this.alunos = new HashMap<>();
         this.alunosPorCpf = new HashMap<>();
         this.proximoIdAluno = 1;
@@ -256,14 +256,14 @@ public class Registro {
 
     // Métodos para Período
     public void cadastrarPeriodo(String nome, String codigo, String descricao, String dataInicio, String dataFim) {
-        if (periodos.containsKey(codigo)) {
+        if (cursos.containsKey(codigo)) {
             System.out.println("Período com esse código já existe.");
         } else {
-            Periodo periodo = new Periodo(nome, codigo);
+            Curso periodo = new Curso(nome, codigo);
             periodo.setDescricao(descricao);
             periodo.setDataInicio(dataInicio);
             periodo.setDataFim(dataFim);
-            periodos.put(codigo, periodo);
+            cursos.put(codigo, periodo);
             System.out.println("Período cadastrado com sucesso.");
         }
     }
@@ -274,11 +274,11 @@ public class Registro {
     }
 
     public void listarPeriodos() {
-        if (periodos.isEmpty()) {
+        if (cursos.isEmpty()) {
             System.out.println("Nenhum período cadastrado.");
         } else {
             System.out.println("\n--- PERÍODOS CADASTRADOS ---");
-            for (Periodo p : periodos.values()) {
+            for (Curso p : cursos.values()) {
                 System.out.println(p);
                 System.out.println("------------------------------");
             }
@@ -289,7 +289,7 @@ public class Registro {
     public void gerarRelatorios() {
         System.out.println("\n--- RELATÓRIO GERAL ---");
         System.out.println("Total de Turmas: " + turmas.size());
-        System.out.println("Total de Períodos: " + periodos.size());
+        System.out.println("Total de Períodos: " + cursos.size());
         System.out.println("Total de Alunos Cadastrados: " + alunos.size());
     
         // Distribuição por gênero
