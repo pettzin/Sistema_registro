@@ -1,4 +1,4 @@
-package edu.br.cruzeirodosul;
+package edu.br.cruzeirodosul.model;
 
 import lombok.*;
 

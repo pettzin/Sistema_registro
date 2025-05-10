@@ -1,14 +1,27 @@
 package edu.br.cruzeirodosul;
 
 import edu.br.cruzeirodosul.controller.AlunoController;
+import edu.br.cruzeirodosul.controller.CursoController;
+import edu.br.cruzeirodosul.controller.ProfessorController;
+import edu.br.cruzeirodosul.controller.TurmaController;
 import edu.br.cruzeirodosul.model.Registro;
-import edu.br.cruzeirodosul.view.AlunoView;
-import edu.br.cruzeirodosul.view.MainView;                
+import edu.br.cruzeirodosul.view.MainView;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class Main {
+    
+    // Códigos ANSI para cores (mantidos para compatibilidade com a versão console)
+    private static final String RESET = "\033[0m";
+    private static final String BLUE = "\033[0;34m";
+    private static final String CYAN = "\033[0;36m";
+    private static final String YELLOW = "\033[0;33m";
+    private static final String GREEN = "\033[0;32m";
+    private static final String PURPLE = "\033[0;35m";
+    private static final String WHITE = "\033[0;37m";
+    private static final String RED = "\033[0;31m";
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
@@ -26,14 +39,17 @@ public class Main {
                 // Cria a view principal
                 MainView mainView = new MainView();
                 
-                // Cria o controlador do aluno
+                // Cria os controladores
                 AlunoController alunoController = new AlunoController(registro, mainView.getAlunoView());
+                TurmaController turmaController = new TurmaController(registro, mainView.getTurmaView());
+                CursoController cursoController = new CursoController(registro, mainView.getCursoView());
+                ProfessorController professorController = new ProfessorController(registro, mainView.getProfessorView());
                 
                 // Configura os listeners da view principal
                 mainView.addAlunoButtonListener(e -> mainView.showView("aluno"));
                 mainView.addTurmaButtonListener(e -> mainView.showView("turma"));
                 mainView.addCursoButtonListener(e -> mainView.showView("curso"));
-                
+                mainView.addMatriculaButtonListener(e -> mainView.showView("matricula"));
                 mainView.addProfessorButtonListener(e -> mainView.showView("professor"));
                 
                 // Exibe a view principal
