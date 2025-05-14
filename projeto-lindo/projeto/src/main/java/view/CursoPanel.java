@@ -4,6 +4,7 @@ import controller.CursoController;
 import controller.ProfessorController;
 import model.Curso;
 import model.Professor;
+import view.components.Input;
 
 import javax.swing.*;
 import java.awt.*;
@@ -117,6 +118,13 @@ public class CursoPanel extends JPanel {
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Aplica as validações aos campos
+        Input.definirLimiteCaracteres(nomeField, 50);
+        Input.definirLimiteCaracteres(descricaoArea, 500);
+        
+        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome do curso é obrigatório!");
+        Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
     }
     
     private void atualizarProfessores() {
@@ -132,8 +140,13 @@ public class CursoPanel extends JPanel {
             String nome = nomeField.getText().trim();
             String descricao = descricaoArea.getText().trim();
             
-            if (nome.isEmpty() || descricao.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+            if (nome.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "O nome do curso é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (descricao.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "A descrição do curso é obrigatória!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             

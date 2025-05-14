@@ -4,6 +4,7 @@ import controller.AlunoController;
 import controller.TurmaController;
 import model.Aluno;
 import model.Turma;
+import view.components.Input;
 
 import javax.swing.*;
 import java.awt.*;
@@ -181,6 +182,22 @@ public class AlunoPanel extends JPanel {
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Aplica as máscaras e validações aos campos
+        Input.aplicarMascaraData(dataNascimentoField);
+        Input.aplicarMascaraCPF(cpfField);
+        Input.definirLimiteCaracteres(nomeField, 50);
+        Input.definirLimiteCaracteres(emailField, 100);
+        Input.definirLimiteCaracteres(generoField, 20);
+        Input.definirLimiteCaracteres(enderecoArea, 200);
+        Input.apenasAlfabetico(generoField);
+        
+        // Adiciona feedback visual em tempo real
+        Input.adicionarFeedbackVisual(nomeField, Input.TipoValidacao.REQUERIDO);
+        Input.adicionarFeedbackVisual(dataNascimentoField, Input.TipoValidacao.DATA);
+        Input.adicionarFeedbackVisual(cpfField, Input.TipoValidacao.CPF);
+        Input.adicionarFeedbackVisual(emailField, Input.TipoValidacao.EMAIL);
+        Input.adicionarFeedbackVisual(generoField, Input.TipoValidacao.ALFABETICO);
     }
     
     private void atualizarTurmas() {
@@ -200,8 +217,34 @@ public class AlunoPanel extends JPanel {
             String genero = generoField.getText().trim();
             String endereco = enderecoArea.getText().trim();
             
-            if (nome.isEmpty() || dataNascimentoStr.isEmpty() || cpf.isEmpty() || email.isEmpty() || genero.isEmpty() || endereco.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+            // Validação dos campos
+            if (!Input.validarCampo(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!")) {
+                return;
+            }
+            
+            if (!Input.validarCampo(dataNascimentoField, Input.TipoValidacao.REQUERIDO, "A data de nascimento é obrigatória!") ||
+                !Input.validarCampo(dataNascimentoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy")) {
+                return;
+            }
+            
+            if (!Input.validarCampo(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!") ||
+                !Input.validarCampo(cpfField, Input.TipoValidacao.CPF, "Formato de CPF inválido!")) {
+                return;
+            }
+            
+            if (!Input.validarCampo(emailField, Input.TipoValidacao.REQUERIDO, "O email é obrigatório!") ||
+                !Input.validarCampo(emailField, Input.TipoValidacao.EMAIL, "Formato de email inválido!")) {
+                return;
+            }
+            
+            if (!Input.validarCampo(generoField, Input.TipoValidacao.REQUERIDO, "O gênero é obrigatório!") ||
+                !Input.validarCampo(generoField, Input.TipoValidacao.ALFABETICO, "O gênero deve conter apenas letras!")) {
+                return;
+            }
+            
+            if (endereco.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "O endereço é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
+                enderecoArea.requestFocus();
                 return;
             }
             
@@ -232,7 +275,7 @@ public class AlunoPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Aluno salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao salvar aluno: Formato de data inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }

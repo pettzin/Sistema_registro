@@ -4,6 +4,7 @@ import controller.CursoController;
 import controller.TurmaController;
 import model.Curso;
 import model.Turma;
+import view.components.Input;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class TurmaPanel extends JPanel {
     private MainFrame mainFrame;
@@ -25,6 +27,10 @@ public class TurmaPanel extends JPanel {
     private JTextField dataTerminoField;
     
     private Turma turmaAtual;
+    
+    // Padrões de regex para validação
+    private static final Pattern PADRAO_NOME_TURMA = Pattern.compile("^[a-zA-Z0-9]+$"); // Apenas alfanumérico para o nome da turma
+    private static final Pattern PADRAO_PERIODO = Pattern.compile("^[a-zA-ZÀ-ú]+$"); // Apenas letras e acentos para o período
     
     public TurmaPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -168,6 +174,26 @@ public class TurmaPanel extends JPanel {
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Aplica as máscaras e validações aos campos
+        Input.aplicarMascaraData(dataInicioField);
+        Input.aplicarMascaraData(dataTerminoField);
+        Input.definirLimiteCaracteres(nomeField, 10);
+        Input.definirLimiteCaracteres(periodoField, 20);
+        Input.apenasNumeros(capacidadeField);
+        Input.apenasAlfabetico(periodoField);
+        Input.apenasAlfanumerico(nomeField);
+        
+        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome da turma é obrigatório!");
+        Input.adicionarValidacaoPersonalizada(nomeField, PADRAO_NOME_TURMA, "Nome da turma inválido (apenas letras e números).");
+        Input.adicionarValidacao(periodoField, Input.TipoValidacao.REQUERIDO, "O período é obrigatório!");
+        Input.adicionarValidacaoPersonalizada(periodoField, PADRAO_PERIODO, "Período inválido (apenas letras).");
+        Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.REQUERIDO, "A capacidade é obrigatória!");
+        Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.NUMERICO, "Capacidade inválida (digite um número).");
+        Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.REQUERIDO, "A data de início é obrigatória!");
+        Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
+        Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.REQUERIDO, "A data de término é obrigatória!");
+        Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
     }
     
     private void atualizarCursos() {
@@ -191,9 +217,29 @@ public class TurmaPanel extends JPanel {
                 return;
             }
             
-            int capacidade = Integer.parseInt(capacidadeStr);
-            if (capacidade <= 0 || capacidade > 40) {
-                JOptionPane.showMessageDialog(this, "A capacidade deve ser entre 1 e 40 alunos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            if (!PADRAO_NOME_TURMA.matcher(nome).matches()) {
+                JOptionPane.showMessageDialog(this, "Nome da turma inválido (apenas letras e números).", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!PADRAO_PERIODO.matcher(periodo).matches()) {
+                JOptionPane.showMessageDialog(this, "Período inválido (apenas letras).", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            try {
+                int capacidade = Integer.parseInt(capacidadeStr);
+                if (capacidade <= 0 || capacidade > 40) {
+                    JOptionPane.showMessageDialog(this, "A capacidade deve ser entre 1 e 40 alunos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Capacidade inválida. Digite um número!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!Input.isDataValida(dataInicioStr) || !Input.isDataValida(dataTerminoStr)) {
+                JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -218,7 +264,7 @@ public class TurmaPanel extends JPanel {
             
             turmaAtual.setCodigo(nome);
             turmaAtual.setPeriodo(periodo);
-            turmaAtual.setCapacidade(capacidade);
+            turmaAtual.setCapacidade(Integer.parseInt(capacidadeStr));
             turmaAtual.setDataInicio(dataInicio);
             turmaAtual.setDataTermino(dataTermino);
             turmaAtual.setCurso(curso);
@@ -229,8 +275,6 @@ public class TurmaPanel extends JPanel {
             limparCampos();
             JOptionPane.showMessageDialog(this, "Turma salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Capacidade inválida. Digite um número!", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (ParseException e) {
             JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {

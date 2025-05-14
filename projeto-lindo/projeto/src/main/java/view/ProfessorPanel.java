@@ -2,6 +2,7 @@ package view;
 
 import controller.ProfessorController;
 import model.Professor;
+import view.components.Input;
 
 import javax.swing.*;
 import java.awt.*;
@@ -145,6 +146,22 @@ public class ProfessorPanel extends JPanel {
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Aplica as máscaras e validações aos campos
+        Input.aplicarMascaraData(dataNascimentoField);
+        Input.aplicarMascaraCPF(cpfField);
+        Input.definirLimiteCaracteres(nomeField, 50);
+        Input.definirLimiteCaracteres(carteirinhaField, 20);
+        Input.definirLimiteCaracteres(enderecoArea, 200);
+        Input.apenasAlfabetico(nomeField);
+        
+        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
+        Input.adicionarValidacao(dataNascimentoField, Input.TipoValidacao.REQUERIDO, "A data de nascimento é obrigatória!");
+        Input.adicionarValidacao(dataNascimentoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
+        Input.adicionarValidacao(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!");
+        Input.adicionarValidacao(cpfField, Input.TipoValidacao.CPF, "Formato de CPF inválido!");
+        Input.adicionarValidacaoPersonalizada(enderecoArea, Input.TipoValidacao.REQUERIDO, "O endereço é obrigatório!");
+        Input.adicionarValidacao(carteirinhaField, Input.TipoValidacao.REQUERIDO, "A carteirinha de licenciatura é obrigatória!");
     }
     
     private void salvarProfessor() {
@@ -157,6 +174,16 @@ public class ProfessorPanel extends JPanel {
             
             if (nome.isEmpty() || dataNascimentoStr.isEmpty() || cpf.isEmpty() || endereco.isEmpty() || carteirinha.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!Input.isDataValida(dataNascimentoStr)) {
+                JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!Input.isCPFValido(cpf)) {
+                JOptionPane.showMessageDialog(this, "Formato de CPF inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
