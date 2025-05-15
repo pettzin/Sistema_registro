@@ -7,6 +7,8 @@ import model.Turma;
 import view.components.Input;
 
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
+
 import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,8 +23,9 @@ public class AlunoPanel extends JPanel {
     private JTextField nomeField;
     private JTextField dataNascimentoField;
     private JTextField cpfField;
+    private JTextField telefoneField;
     private JTextField emailField;
-    private JTextField generoField;
+    private JComboBox<String> generoField;
     private JTextArea enderecoArea;
     private JComboBox<Turma> turmaComboBox;
     
@@ -95,44 +98,67 @@ public class AlunoPanel extends JPanel {
         cpfField = new JTextField(20);
         formPanel.add(cpfField, gbc);
         
-        // Email
+        // Label: Telefone
         gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        JLabel telefoneLabel = new JLabel("Telefone:");
+        telefoneLabel.setForeground(Color.WHITE);
+        formPanel.add(telefoneLabel, gbc);
+
+        // Campo: Telefone
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        try {
+            MaskFormatter telefoneFormatter = new MaskFormatter("(##) #####-####");
+            telefoneFormatter.setPlaceholderCharacter('_');
+            telefoneField = new JFormattedTextField(telefoneFormatter);
+        } catch (ParseException e) {
+            telefoneField = new JFormattedTextField();
+        }
+        formPanel.add(telefoneField, gbc);
+
+
+        // Email
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.gridwidth = 1;
         JLabel emailLabel = new JLabel("Email");
         emailLabel.setForeground(Color.WHITE);
         formPanel.add(emailLabel, gbc);
         
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         emailField = new JTextField(20);
         formPanel.add(emailField, gbc);
         
         // Gênero
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 1;
-        JLabel generoLabel = new JLabel("Genero");
+        JLabel generoLabel = new JLabel("Gênero");
         generoLabel.setForeground(Color.WHITE);
         formPanel.add(generoLabel, gbc);
         
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
-        generoField = new JTextField(20);
+        String[] generos = {"Masculino", "Feminino", "Outro"};
+        generoField = new JComboBox<>(generos);
         formPanel.add(generoField, gbc);
         
         // Endereço
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 1;
         JLabel enderecoLabel = new JLabel("Endereço");
         enderecoLabel.setForeground(Color.WHITE);
         formPanel.add(enderecoLabel, gbc);
         
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         enderecoArea = new JTextArea(5, 20);
         enderecoArea.setLineWrap(true);
@@ -141,14 +167,14 @@ public class AlunoPanel extends JPanel {
         
         // Turma
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridwidth = 1;
         JLabel turmaLabel = new JLabel("Turma");
         turmaLabel.setForeground(Color.WHITE);
         formPanel.add(turmaLabel, gbc);
         
         gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridwidth = 2;
         turmaComboBox = new JComboBox<>();
         atualizarTurmas();
@@ -183,17 +209,17 @@ public class AlunoPanel extends JPanel {
         
         Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
+        Input.aplicarMascaraTelefone(telefoneField);
+        Input.definirLimiteCaracteres(telefoneField, 15);
+        Input.adicionarFeedbackVisual(telefoneField, Input.TipoValidacao.REQUERIDO);
         Input.definirLimiteCaracteres(nomeField, 50);
         Input.definirLimiteCaracteres(emailField, 100);
-        Input.definirLimiteCaracteres(generoField, 20);
         Input.definirLimiteCaracteres(enderecoArea, 200);
-        Input.apenasAlfabetico(generoField);
         
         Input.adicionarFeedbackVisual(nomeField, Input.TipoValidacao.REQUERIDO);
         Input.adicionarFeedbackVisual(dataNascimentoField, Input.TipoValidacao.DATA);
         Input.adicionarFeedbackVisual(cpfField, Input.TipoValidacao.CPF);
         Input.adicionarFeedbackVisual(emailField, Input.TipoValidacao.EMAIL);
-        Input.adicionarFeedbackVisual(generoField, Input.TipoValidacao.ALFABETICO);
         }
     
     public void atualizarListaTurmas() {
@@ -213,8 +239,9 @@ public class AlunoPanel extends JPanel {
             String nome = nomeField.getText().trim();
             String dataNascimentoStr = dataNascimentoField.getText().trim();
             String cpf = cpfField.getText().trim();
+            String telefone = telefoneField.getText().trim();
             String email = emailField.getText().trim();
-            String genero = generoField.getText().trim();
+            String genero = (String) generoField.getSelectedItem();
             String endereco = enderecoArea.getText().trim();
             
             // Validação dos campos
@@ -231,16 +258,21 @@ public class AlunoPanel extends JPanel {
                 !Input.validarCampo(cpfField, Input.TipoValidacao.CPF, "Formato de CPF inválido!")) {
                 return;
             }
+
+            if (!Input.validarCampo(telefoneField, Input.TipoValidacao.REQUERIDO, "O telefone é obrigatório!")) {
+                return;
+            }
             
             if (!Input.validarCampo(emailField, Input.TipoValidacao.REQUERIDO, "O email é obrigatório!") ||
                 !Input.validarCampo(emailField, Input.TipoValidacao.EMAIL, "Formato de email inválido!")) {
                 return;
             }
             
-            if (!Input.validarCampo(generoField, Input.TipoValidacao.REQUERIDO, "O gênero é obrigatório!") ||
-                !Input.validarCampo(generoField, Input.TipoValidacao.ALFABETICO, "O gênero deve conter apenas letras!")) {
+            if (generoField.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(this, "Selecione o gênero!", "Erro", JOptionPane.ERROR_MESSAGE);
+                generoField.requestFocus();
                 return;
-            }
+        }
             
             if (endereco.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "O endereço é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -260,6 +292,7 @@ public class AlunoPanel extends JPanel {
             alunoAtual.setNome(nome);
             alunoAtual.setDataNascimento(dataNascimento);
             alunoAtual.setCpf(cpf);
+            alunoAtual.setTelefone(telefone);
             alunoAtual.setEmail(email);
             alunoAtual.setGenero(genero);
             alunoAtual.setEndereco(endereco);
@@ -314,7 +347,8 @@ public class AlunoPanel extends JPanel {
         dataNascimentoField.setText(dateFormat.format(aluno.getDataNascimento()));
         cpfField.setText(aluno.getCpf());
         emailField.setText(aluno.getEmail());
-        generoField.setText(aluno.getGenero());
+        generoField.setSelectedItem(aluno.getGenero());
+        telefoneField.setText(aluno.getTelefone());
         enderecoArea.setText(aluno.getEndereco());
         
         if (aluno.getTurma() != null) {
@@ -334,7 +368,7 @@ public class AlunoPanel extends JPanel {
         dataNascimentoField.setText("");
         cpfField.setText("");
         emailField.setText("");
-        generoField.setText("");
+        generoField.setSelectedIndex(-1);
         enderecoArea.setText("");
         turmaComboBox.setSelectedIndex(-1);
     }

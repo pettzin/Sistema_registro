@@ -7,6 +7,7 @@ public class Aluno {
     private String nome;
     private Date dataNascimento;
     private String cpf;
+    private String telefone;
     private String email;
     private String genero;
     private String endereco;
@@ -15,11 +16,12 @@ public class Aluno {
     public Aluno() {
     }
 
-    public Aluno(int id, String nome, Date dataNascimento, String cpf, String email, String genero, String endereco, Turma turma) {
+    public Aluno(int id, String nome, Date dataNascimento, String cpf, String telefone, String email, String genero, String endereco, Turma turma) {
         this.id = id;
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.cpf = cpf;
+        this.telefone = telefone;
         this.email = email;
         this.genero = genero;
         this.endereco = endereco;
@@ -57,6 +59,14 @@ public class Aluno {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+    
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
     public String getEmail() {
