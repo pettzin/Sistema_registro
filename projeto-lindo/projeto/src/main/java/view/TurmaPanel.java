@@ -28,9 +28,8 @@ public class TurmaPanel extends JPanel {
     
     private Turma turmaAtual;
     
-    // Padrões de regex para validação
-    private static final Pattern PADRAO_NOME_TURMA = Pattern.compile("^[a-zA-Z0-9]+$"); // Apenas alfanumérico para o nome da turma
-    private static final Pattern PADRAO_PERIODO = Pattern.compile("^[a-zA-ZÀ-ú]+$"); // Apenas letras e acentos para o período
+    private static final Pattern PADRAO_NOME_TURMA = Pattern.compile("^[a-zA-Z0-9]+$");
+    private static final Pattern PADRAO_PERIODO = Pattern.compile("^[a-zA-ZÀ-ú]+$");
     
     public TurmaPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -40,7 +39,6 @@ public class TurmaPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(68, 68, 68));
         
-        // Painel de título
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(68, 68, 68));
         JLabel titleLabel = new JLabel("Registrar Turma");
@@ -48,7 +46,6 @@ public class TurmaPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titlePanel.add(titleLabel);
         
-        // Painel de formulário
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(68, 68, 68));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -146,7 +143,6 @@ public class TurmaPanel extends JPanel {
         dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
         formPanel.add(dataTerminoField, gbc);
         
-        // Painel de botões
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(new Color(68, 68, 68));
         
@@ -170,12 +166,10 @@ public class TurmaPanel extends JPanel {
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        // Adiciona os painéis ao painel principal
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
         
-        // Aplica as máscaras e validações aos campos
         Input.aplicarMascaraData(dataInicioField);
         Input.aplicarMascaraData(dataTerminoField);
         Input.definirLimiteCaracteres(nomeField, 10);

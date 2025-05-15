@@ -12,11 +12,9 @@ public class TurmaDAO {
 
     public void salvar(Turma turma) {
         if (turma.getId() == 0) {
-            // Nova turma
             turma.setId(nextId++);
             turmas.add(turma);
         } else {
-            // Atualizar turma existente
             for (int i = 0; i < turmas.size(); i++) {
                 if (turmas.get(i).getId() == turma.getId()) {
                     turmas.set(i, turma);

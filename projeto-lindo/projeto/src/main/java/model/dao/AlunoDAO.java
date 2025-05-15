@@ -13,11 +13,9 @@ public class AlunoDAO {
 
     public void salvar(Aluno aluno) {
         if (aluno.getId() == 0) {
-            // Novo aluno
             aluno.setId(nextId++);
             alunos.add(aluno);
         } else {
-            // Atualizar aluno existente
             for (int i = 0; i < alunos.size(); i++) {
                 if (alunos.get(i).getId() == aluno.getId()) {
                     alunos.set(i, aluno);

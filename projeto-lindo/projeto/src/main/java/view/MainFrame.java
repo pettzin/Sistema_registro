@@ -17,22 +17,19 @@ public class MainFrame extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
         
-        // Inicializa os painéis
         alunoPanel = new AlunoPanel(this);
         turmaPanel = new TurmaPanel(this);
         cursoPanel = new CursoPanel(this);
         professorPanel = new ProfessorPanel(this);
         pesquisaPanel = new PesquisaPanel(this);
-        
-        // Painel de conteúdo principal
+
         contentPanel = new JPanel(new BorderLayout());
         setContentPane(contentPanel);
         
-        // Painel de navegação (menu lateral)
+
         JPanel menuPanel = createMenuPanel();
         contentPanel.add(menuPanel, BorderLayout.WEST);
         
-        // Inicialmente, mostra o painel de alunos
         showPanel(alunoPanel);
     }
     
@@ -42,21 +39,19 @@ public class MainFrame extends JFrame {
         menuPanel.setBackground(new Color(51, 51, 51));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Botões do menu
         JButton alunoButton = createMenuButton("Aluno");
         JButton turmaButton = createMenuButton("Turma");
         JButton cursoButton = createMenuButton("Curso");
         JButton professorButton = createMenuButton("Professor");
         JButton pesquisarButton = createMenuButton("Pesquisar");
         
-        // Adiciona ação aos botões
         alunoButton.addActionListener(e -> showPanel(alunoPanel));
         turmaButton.addActionListener(e -> showPanel(turmaPanel));
         cursoButton.addActionListener(e -> showPanel(cursoPanel));
         professorButton.addActionListener(e -> showPanel(professorPanel));
         pesquisarButton.addActionListener(e -> showPanel(pesquisaPanel));
         
-        // Adiciona botões ao painel
+
         menuPanel.add(alunoButton);
         menuPanel.add(turmaButton);
         menuPanel.add(cursoButton);
@@ -89,15 +84,14 @@ public class MainFrame extends JFrame {
     }
     
     public void showPanel(JPanel panel) {
-        // Remove o painel atual
+
         Component[] components = contentPanel.getComponents();
         for (Component component : components) {
-            if (component != contentPanel.getComponent(0)) { // Não remove o menu
+            if (component != contentPanel.getComponent(0)) {
                 contentPanel.remove(component);
             }
         }
         
-        // Adiciona o novo painel
         contentPanel.add(panel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();

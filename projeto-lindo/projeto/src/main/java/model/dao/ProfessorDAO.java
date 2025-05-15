@@ -11,11 +11,9 @@ public class ProfessorDAO {
 
     public void salvar(Professor professor) {
         if (professor.getId() == 0) {
-            // Novo professor
             professor.setId(nextId++);
             professores.add(professor);
         } else {
-            // Atualizar professor existente
             for (int i = 0; i < professores.size(); i++) {
                 if (professores.get(i).getId() == professor.getId()) {
                     professores.set(i, professor);

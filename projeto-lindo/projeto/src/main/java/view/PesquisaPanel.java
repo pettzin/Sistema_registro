@@ -29,8 +29,7 @@ public class PesquisaPanel extends JPanel {
     private JComboBox<String> tipoComboBox;
     private JTextArea resultadoArea;
 
-    // Padrões de regex para validação (apenas para exemplo)
-    private static final Pattern PADRAO_PESQUISA = Pattern.compile("^[a-zA-Z0-9\\s\\.\\-]+$"); // Alfanumérico, espaços, pontos e hífens
+    private static final Pattern PADRAO_PESQUISA = Pattern.compile("^[a-zA-Z0-9\\s\\.\\-]+$");
 
     public PesquisaPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -42,7 +41,6 @@ public class PesquisaPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(68, 68, 68));
 
-        // Painel de título
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(68, 68, 68));
         JLabel titleLabel = new JLabel("Pesquisar");
@@ -50,7 +48,6 @@ public class PesquisaPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titlePanel.add(titleLabel);
 
-        // Painel de pesquisa
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchPanel.setBackground(new Color(68, 68, 68));
 
@@ -81,15 +78,12 @@ public class PesquisaPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(resultadoArea);
         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Adiciona os painéis ao painel principal
         add(titlePanel, BorderLayout.NORTH);
         add(searchPanel, BorderLayout.CENTER);
         add(resultPanel, BorderLayout.SOUTH);
 
-        // Adiciona validação ao campo de pesquisa
         adicionarValidacao(pesquisaField, TipoValidacao.REQUERIDO, "Digite um termo para pesquisar!");
-        // Exemplo de outra validação para o campo de pesquisa (apenas alfanumérico, espaços, pontos e hífens)
-        // adicionarValidacao(pesquisaField, TipoValidacao.PADRAO, "Termo de pesquisa inválido!", PADRAO_PESQUISA);
+
     }
 
     private void realizarPesquisa() {
@@ -273,7 +267,6 @@ public class PesquisaPanel extends JPanel {
     }
 
     /**
-     * Adiciona validação a um campo de texto com um padrão (regex)
      * @param campoTexto O campo de texto para validar
      * @param tipoValidacao O tipo de validação a aplicar (use PADRAO)
      * @param mensagemErro A mensagem de erro a exibir se a validação falhar
@@ -303,9 +296,7 @@ public class PesquisaPanel extends JPanel {
         });
     }
 
-    /**
-     * Tipos de validação
-     */
+
     public enum TipoValidacao {
         REQUERIDO,
         PADRAO

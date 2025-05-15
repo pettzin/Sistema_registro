@@ -154,7 +154,6 @@ public class AlunoPanel extends JPanel {
         atualizarTurmas();
         formPanel.add(turmaComboBox, gbc);
         
-        // Painel de botões
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(new Color(68, 68, 68));
         
@@ -178,12 +177,10 @@ public class AlunoPanel extends JPanel {
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        // Adiciona os painéis ao painel principal
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
         
-        // Aplica as máscaras e validações aos campos
         Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
         Input.definirLimiteCaracteres(nomeField, 50);
@@ -192,7 +189,6 @@ public class AlunoPanel extends JPanel {
         Input.definirLimiteCaracteres(enderecoArea, 200);
         Input.apenasAlfabetico(generoField);
         
-        // Adiciona feedback visual em tempo real
         Input.adicionarFeedbackVisual(nomeField, Input.TipoValidacao.REQUERIDO);
         Input.adicionarFeedbackVisual(dataNascimentoField, Input.TipoValidacao.DATA);
         Input.adicionarFeedbackVisual(cpfField, Input.TipoValidacao.CPF);

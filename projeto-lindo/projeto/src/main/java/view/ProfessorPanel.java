@@ -29,7 +29,6 @@ public class ProfessorPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(68, 68, 68));
         
-        // Painel de título
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(68, 68, 68));
         JLabel titleLabel = new JLabel("Registrar Professor");
@@ -37,7 +36,6 @@ public class ProfessorPanel extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titlePanel.add(titleLabel);
         
-        // Painel de formulário
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(new Color(68, 68, 68));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -118,7 +116,6 @@ public class ProfessorPanel extends JPanel {
         carteirinhaField = new JTextField(20);
         formPanel.add(carteirinhaField, gbc);
         
-        // Painel de botões
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(new Color(68, 68, 68));
         
@@ -142,7 +139,6 @@ public class ProfessorPanel extends JPanel {
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        // Adiciona os painéis ao painel principal
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);

@@ -90,7 +90,6 @@ public class CursoPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(descricaoArea);
         formPanel.add(scrollPane, gbc);
         
-        // Painel de botões
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(new Color(68, 68, 68));
         
@@ -114,12 +113,11 @@ public class CursoPanel extends JPanel {
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        // Adiciona os painéis ao painel principal
         add(titlePanel, BorderLayout.NORTH);
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
         
-        // Aplica as validações aos campos
+
         Input.definirLimiteCaracteres(nomeField, 50);
         Input.definirLimiteCaracteres(descricaoArea, 500);
         
@@ -127,12 +125,10 @@ public class CursoPanel extends JPanel {
         Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
     }
     
-        // No CursoPanel.java
         public void atualizarListaProfessores() {
             atualizarProfessores();
         }
 
-        // Mude a visibilidade do método existente
         public void atualizarProfessores() {
             professorComboBox.removeAllItems();
             List<Professor> professores = professorController.buscarTodosProfessores();
