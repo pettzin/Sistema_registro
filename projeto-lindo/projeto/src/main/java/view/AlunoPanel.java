@@ -198,6 +198,10 @@ public class AlunoPanel extends JPanel {
         Input.adicionarFeedbackVisual(cpfField, Input.TipoValidacao.CPF);
         Input.adicionarFeedbackVisual(emailField, Input.TipoValidacao.EMAIL);
         Input.adicionarFeedbackVisual(generoField, Input.TipoValidacao.ALFABETICO);
+        }
+    
+    public void atualizarListaTurmas() {
+        atualizarTurmas();
     }
     
     private void atualizarTurmas() {

@@ -196,7 +196,10 @@ public class TurmaPanel extends JPanel {
         Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
     }
     
-    private void atualizarCursos() {
+    public void atualizarListaCursos() {
+        atualizarCursos();
+        }
+    public void atualizarCursos() {
         cursoComboBox.removeAllItems();
         List<Curso> cursos = cursoController.buscarTodosCursos();
         for (Curso curso : cursos) {
@@ -271,6 +274,8 @@ public class TurmaPanel extends JPanel {
             
             turmaController.salvarTurma(turmaAtual);
             curso.adicionarTurma(turmaAtual);
+
+            mainFrame.notificarTurmaSalva();
             
             limparCampos();
             JOptionPane.showMessageDialog(this, "Turma salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);

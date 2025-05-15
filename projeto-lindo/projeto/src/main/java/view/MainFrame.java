@@ -115,4 +115,14 @@ public class MainFrame extends JFrame {
             frame.setVisible(true);
         });
     }
+        public void notificarProfessorSalvo() {
+            cursoPanel.atualizarListaProfessores();
+
+        }
+        public void notificarCursoSalvo() {
+            turmaPanel.atualizarListaCursos();
+    }
+        public void notificarTurmaSalva() {
+        alunoPanel.atualizarListaTurmas();
+    }
 }

@@ -127,13 +127,19 @@ public class CursoPanel extends JPanel {
         Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
     }
     
-    private void atualizarProfessores() {
-        professorComboBox.removeAllItems();
-        List<Professor> professores = professorController.buscarTodosProfessores();
-        for (Professor professor : professores) {
-            professorComboBox.addItem(professor);
+        // No CursoPanel.java
+        public void atualizarListaProfessores() {
+            atualizarProfessores();
         }
-    }
+
+        // Mude a visibilidade do método existente
+        public void atualizarProfessores() {
+            professorComboBox.removeAllItems();
+            List<Professor> professores = professorController.buscarTodosProfessores();
+            for (Professor professor : professores) {
+                professorComboBox.addItem(professor);
+            }
+        }
     
     private void salvarCurso() {
         try {
@@ -165,6 +171,7 @@ public class CursoPanel extends JPanel {
             cursoAtual.setProfessor(professor);
             
             cursoController.salvarCurso(cursoAtual);
+            mainFrame.notificarCursoSalvo();
             
             limparCampos();
             JOptionPane.showMessageDialog(this, "Curso salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);

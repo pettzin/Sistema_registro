@@ -182,10 +182,10 @@ public class ProfessorPanel extends JPanel {
                 return;
             }
             
-            if (!Input.isCPFValido(cpf)) {
+            /*if (!Input.isCPFValido(cpf)) {
                 JOptionPane.showMessageDialog(this, "Formato de CPF inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
-            }
+            }*/
             
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             Date dataNascimento = dateFormat.parse(dataNascimentoStr);
@@ -202,6 +202,8 @@ public class ProfessorPanel extends JPanel {
             
             professorController.salvarProfessor(professorAtual);
             
+            mainFrame.notificarProfessorSalvo();
+
             limparCampos();
             JOptionPane.showMessageDialog(this, "Professor salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
