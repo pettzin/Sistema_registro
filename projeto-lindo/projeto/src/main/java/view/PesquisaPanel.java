@@ -109,60 +109,84 @@ public class PesquisaPanel extends BasePanel {
 
         resultadoArea.setText("");
 
-        switch (tipo) {
-            case "Aluno":
-                pesquisarAlunos(termo);
-                break;
-            case "Turma":
-                pesquisarTurmas(termo);
-                break;
-            case "Curso":
-                pesquisarCursos(termo);
-                break;
-            case "Professor":
-                pesquisarProfessores(termo);
-                break;
+        try {
+            switch (tipo) {
+                case "Aluno":
+                    pesquisarAlunos(termo);
+                    break;
+                case "Turma":
+                    pesquisarTurmas(termo);
+                    break;
+                case "Curso":
+                    pesquisarCursos(termo);
+                    break;
+                case "Professor":
+                    pesquisarProfessores(termo);
+                    break;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao realizar pesquisa: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            resultadoArea.setText("Ocorreu um erro durante a pesquisa. Por favor, tente novamente.");
         }
     }
 
     private void pesquisarAlunos(String termo) {
-        List<Aluno> alunos = alunoController.buscarAlunosPorNome(termo);
+        try {
+            List<Aluno> alunos = alunoController.buscarAlunosPorNome(termo);
 
-        if (alunos.isEmpty()) {
-            Aluno aluno = alunoController.buscarAlunoPorCpf(termo);
-            if (aluno != null) {
-                alunos.add(aluno);
-            }
-        }
-
-        if (alunos.isEmpty()) {
-            resultadoArea.setText("Nenhum aluno encontrado.");
-            return;
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        StringBuilder sb = new StringBuilder();
-
-        for (Aluno aluno : alunos) {
-            sb.append("Nome: ").append(aluno.getNome()).append("\n");
-            sb.append("Data Nascimento: ").append(dateFormat.format(aluno.getDataNascimento())).append("\n");
-            sb.append("CPF: ").append(aluno.getCpf()).append("\n");
-            sb.append("Email: ").append(aluno.getEmail()).append("\n");
-            sb.append("Gênero: ").append(aluno.getGenero()).append("\n");
-            sb.append("Endereço: ").append(aluno.getEndereco()).append("\n");
-
-            if (aluno.getTurma() != null) {
-                sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getPeriodo()).append("\n");
-
-                if (aluno.getTurma().getCurso() != null) {
-                    sb.append("Curso: ").append(aluno.getTurma().getCurso().getNome()).append("\n");
+            if (alunos.isEmpty()) {
+                // Tenta buscar por CPF
+                Aluno aluno = alunoController.buscarAlunoPorCpf(termo);
+                if (aluno != null) {
+                    alunos.add(aluno);
                 }
             }
 
-            sb.append("\n");
-        }
+            if (alunos.isEmpty()) {
+                // Tenta buscar por matrícula
+                try {
+                    Aluno aluno = alunoController.buscarAlunoPorMatricula(termo);
+                    if (aluno != null) {
+                        alunos.add(aluno);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignora se o termo não for um número válido
+                }
+            }
 
-        resultadoArea.setText(sb.toString());
+            if (alunos.isEmpty()) {
+                resultadoArea.setText("Nenhum aluno encontrado.");
+                return;
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            StringBuilder sb = new StringBuilder();
+
+            for (Aluno aluno : alunos) {
+                sb.append("Matrícula: ").append(aluno.getMatricula() != null ? aluno.getMatricula() : aluno.getId()).append("\n");
+                sb.append("Nome: ").append(aluno.getNome()).append("\n");
+                sb.append("Data Nascimento: ").append(aluno.getDataNascimento() != null ? dateFormat.format(aluno.getDataNascimento()) : "Não informada").append("\n");
+                sb.append("CPF: ").append(aluno.getCpf()).append("\n");
+                sb.append("Telefone: ").append(aluno.getTelefone()).append("\n");
+                sb.append("Email: ").append(aluno.getEmail()).append("\n");
+                sb.append("Gênero: ").append(aluno.getGenero()).append("\n");
+                sb.append("Endereço: ").append(aluno.getEndereco()).append("\n");
+
+                if (aluno.getTurma() != null) {
+                    sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getNome()).append("\n");
+
+                    if (aluno.getTurma().getCurso() != null) {
+                        sb.append("Curso: ").append(aluno.getTurma().getCurso().getNome()).append("\n");
+                    }
+                }
+
+                sb.append("\n");
+            }
+
+            resultadoArea.setText(sb.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao pesquisar alunos: " + e.getMessage(), e);
+        }
     }
 
     private void pesquisarTurmas(String termo) {

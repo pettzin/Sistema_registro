@@ -14,40 +14,89 @@ public class AlunoController {
     }
 
     public void salvarAluno(Aluno aluno) {
-        alunoDAO.salvar(aluno);
+        try {
+            alunoDAO.salvar(aluno);
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar aluno: " + e.getMessage());
+            throw new RuntimeException("Erro ao salvar aluno: " + e.getMessage());
+        }
     }
 
     public void excluirAluno(Aluno aluno) {
-        alunoDAO.excluir(aluno);
+        try {
+            alunoDAO.excluir(aluno);
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir aluno: " + e.getMessage());
+            throw new RuntimeException("Erro ao excluir aluno: " + e.getMessage());
+        }
     }
 
     public Aluno buscarAlunoPorId(int id) {
-        return alunoDAO.buscarPorId(id);
+        try {
+            return alunoDAO.buscarPorId(id);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar aluno por ID: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    public Aluno buscarAlunoPorMatricula(String matricula) {
+        try {
+            return alunoDAO.buscarPorId(Integer.parseInt(matricula));
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar aluno por matrícula: " + e.getMessage());
+            return null;
+        }
     }
 
     public List<Aluno> buscarTodosAlunos() {
-        return alunoDAO.buscarTodos();
+        try {
+            return alunoDAO.buscarTodos();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar todos os alunos: " + e.getMessage());
+            return null;
+        }
     }
 
     public List<Aluno> buscarAlunosPorNome(String nome) {
-        return alunoDAO.buscarPorNome(nome);
+        try {
+            return alunoDAO.buscarPorNome(nome);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar alunos por nome: " + e.getMessage());
+            return null;
+        }
     }
 
     public Aluno buscarAlunoPorCpf(String cpf) {
-        return alunoDAO.buscarPorCpf(cpf);
+        try {
+            return alunoDAO.buscarPorCpf(cpf);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar aluno por CPF: " + e.getMessage());
+            return null;
+        }
     }
 
     public List<Aluno> buscarAlunosPorTurma(Turma turma) {
-        return alunoDAO.buscarPorTurma(turma);
+        try {
+            return alunoDAO.buscarPorTurma(turma);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar alunos por turma: " + e.getMessage());
+            return null;
+        }
     }
 
     public boolean matricularAlunoEmTurma(Aluno aluno, Turma turma) {
-        if (turma.getAlunos().size() < turma.getCapacidade()) {
-            aluno.setTurma(turma);
-            turma.adicionarAluno(aluno);
-            alunoDAO.salvar(aluno);
-            return true;
+        try {
+            if (turma.getAlunos().size() < turma.getCapacidade()) {
+                aluno.setTurma(turma);
+                turma.adicionarAluno(aluno);
+                alunoDAO.salvar(aluno);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.err.println("Erro ao matricular aluno em turma: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class Aluno {
     private int id;
+    private String matricula; // Adicionado para representar a chave primária no banco
     private String nome;
     private Date dataNascimento;
     private String cpf;
@@ -14,10 +15,12 @@ public class Aluno {
     private Turma turma;
 
     public Aluno() {
+        this.matricula = "";
     }
 
     public Aluno(int id, String nome, Date dataNascimento, String cpf, String telefone, String email, String genero, String endereco, Turma turma) {
         this.id = id;
+        this.matricula = String.valueOf(id); // Inicializa matricula com o id
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.cpf = cpf;
@@ -28,13 +31,22 @@ public class Aluno {
         this.turma = turma;
     }
 
-    // Getters e Setters
+    // Getters e Setters originais
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+    
+    // Novos getters e setters para matricula
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
     }
 
     public String getNome() {
@@ -103,6 +115,6 @@ public class Aluno {
 
     @Override
     public String toString() {
-        return nome;
+        return nome + (matricula != null && !matricula.isEmpty() ? " (Matrícula: " + matricula + ")" : "");
     }
 }
