@@ -40,29 +40,17 @@ public abstract class BasePanel extends JPanel {
     }
     
     protected Button createSaveButton() {
-        Button salvarButton = new Button("Salvar");
-        salvarButton.setBackground(new Color(51, 51, 51));
-        salvarButton.setForeground(Color.WHITE);
-        salvarButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-        salvarButton.setPreferredSize(new Dimension(120, 35));
+        Button salvarButton = Button.createActionButton("Salvar", new Color(51, 51, 51));
         return salvarButton;
     }
     
     protected Button createEditButton() {
-        Button editarButton = new Button("Editar");
-        editarButton.setBackground(new Color(51, 51, 51));
-        editarButton.setForeground(Color.WHITE);
-        editarButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-        editarButton.setPreferredSize(new Dimension(120, 35));
+        Button editarButton = Button.createActionButton("Editar", new Color(51, 51, 51));
         return editarButton;
     }
     
     protected Button createDeleteButton() {
-        Button excluirButton = new Button("Excluir");
-        excluirButton.setBackground(Color.RED);
-        excluirButton.setForeground(Color.WHITE);
-        excluirButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-        excluirButton.setPreferredSize(new Dimension(120, 35));
+        Button excluirButton = Button.createActionButton("Excluir", Color.RED);
         return excluirButton;
     }
     

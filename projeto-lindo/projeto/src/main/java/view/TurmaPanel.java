@@ -36,7 +36,7 @@ public class TurmaPanel extends BasePanel {
     private Button excluirButton;
     
     public TurmaPanel(MainFrame mainFrame) {
-        super(mainFrame, "Cadastrar Turma");
+        super(mainFrame, "Registrar Turma");
         this.turmaController = new TurmaController();
         this.cursoController = new CursoController();
         
@@ -67,12 +67,12 @@ public class TurmaPanel extends BasePanel {
         capacidadeField.setToolTipText("Máximo: 40 alunos");
         
         // Data Início
-        form.addLabel("Data início", 0, 4);
+        form.addLabel("Data inicio", 0, 4);
         dataInicioField = form.addTextField(1, 4, 2);
         dataInicioField.setToolTipText("Formato: dd/MM/yyyy");
         
         // Data Término
-        form.addLabel("Data término", 0, 5);
+        form.addLabel("Data termino", 0, 5);
         dataTerminoField = form.addTextField(1, 5, 2);
         dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
         
@@ -81,9 +81,14 @@ public class TurmaPanel extends BasePanel {
         editarButton = createEditButton();
         excluirButton = createDeleteButton();
         
-        painelBotoes.add(salvarButton);
-        painelBotoes.add(editarButton);
-        painelBotoes.add(excluirButton);
+        // Configurar o painel de botões
+        JPanel botoesPainel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        botoesPainel.setBackground(new Color(220, 220, 220));
+        botoesPainel.add(salvarButton);
+        botoesPainel.add(editarButton);
+        botoesPainel.add(excluirButton);
+        
+        painelBotoes.add(botoesPainel);
         
         // Aplicar validações de entrada
         Input.aplicarMascaraData(dataInicioField);
@@ -106,6 +111,7 @@ public class TurmaPanel extends BasePanel {
         Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
     }
     
+    // O restante do código permanece o mesmo
     @Override
     protected void setupListeners() {
         salvarButton.addActionListener(e -> salvarTurma());

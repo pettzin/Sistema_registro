@@ -52,22 +52,22 @@ public class MainFrame extends JFrame {
         
         // Criar botões do menu
         Button alunoButton = Button.createMenuButton("Aluno");
-        Button turmaButton = Button.createMenuButton("Turma");
         Button cursoButton = Button.createMenuButton("Curso");
+        Button turmaButton = Button.createMenuButton("Turma");
         Button professorButton = Button.createMenuButton("Professor");
         Button pesquisarButton = Button.createMenuButton("Pesquisar");
         
         // Adicionar botões à lista para rastreamento
         botoesMenu.add(alunoButton);
-        botoesMenu.add(turmaButton);
         botoesMenu.add(cursoButton);
+        botoesMenu.add(turmaButton);
         botoesMenu.add(professorButton);
         botoesMenu.add(pesquisarButton);
         
         // Adicionar action listeners
         alunoButton.addActionListener(e -> selecionarBotao(0, alunoPanel));
-        turmaButton.addActionListener(e -> selecionarBotao(1, turmaPanel));
-        cursoButton.addActionListener(e -> selecionarBotao(2, cursoPanel));
+        cursoButton.addActionListener(e -> selecionarBotao(1, cursoPanel));
+        turmaButton.addActionListener(e -> selecionarBotao(2, turmaPanel));
         professorButton.addActionListener(e -> selecionarBotao(3, professorPanel));
         pesquisarButton.addActionListener(e -> selecionarBotao(4, pesquisaPanel));
         

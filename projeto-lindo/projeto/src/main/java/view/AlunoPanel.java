@@ -87,9 +87,14 @@ public class AlunoPanel extends BasePanel {
         editarButton = createEditButton();
         excluirButton = createDeleteButton();
         
-        painelBotoes.add(salvarButton);
-        painelBotoes.add(editarButton);
-        painelBotoes.add(excluirButton);
+        // Configurar o painel de botões
+        JPanel botoesPainel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        botoesPainel.setBackground(new Color(220, 220, 220));
+        botoesPainel.add(salvarButton);
+        botoesPainel.add(editarButton);
+        botoesPainel.add(excluirButton);
+        
+        painelBotoes.add(botoesPainel);
         
         // Aplicar validações de entrada
         Input.aplicarMascaraData(dataNascimentoField);
@@ -107,6 +112,7 @@ public class AlunoPanel extends BasePanel {
         Input.adicionarFeedbackVisual(emailField, Input.TipoValidacao.EMAIL);
     }
     
+    // O restante do código permanece o mesmo
     @Override
     protected void setupListeners() {
         salvarButton.addActionListener(e -> salvarAluno());

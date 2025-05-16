@@ -10,12 +10,15 @@ import model.Professor;
 import model.Turma;
 import view.components.Button;
 import view.components.Input;
+import view.components.RoundedTextField;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -48,13 +51,15 @@ public class PesquisaPanel extends BasePanel {
     protected void initializeComponents() {
         // Criar um painel de pesquisa
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        searchPanel.setBackground(new Color(68, 68, 68));
+        searchPanel.setBackground(new Color(220, 220, 220));
 
         // Campo de pesquisa
-        pesquisaField = new JTextField(20);
+        pesquisaField = new RoundedTextField(20);
         
         // Combo box de tipo
         tipoComboBox = new JComboBox<>(new String[]{"Aluno", "Turma", "Curso", "Professor"});
+        tipoComboBox.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
+        tipoComboBox.setPreferredSize(new Dimension(tipoComboBox.getPreferredSize().width, 35));
         
         // Botão de pesquisa
         pesquisarButton = Button.createActionButton("Pesquisar", new Color(51, 51, 51));
@@ -65,7 +70,7 @@ public class PesquisaPanel extends BasePanel {
 
         // Área de resultado
         JPanel resultPanel = new JPanel(new BorderLayout());
-        resultPanel.setBackground(new Color(68, 68, 68));
+        resultPanel.setBackground(new Color(220, 220, 220));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         resultadoArea = new JTextArea(15, 40);
@@ -76,6 +81,8 @@ public class PesquisaPanel extends BasePanel {
         resultadoArea.setForeground(Color.BLACK);
 
         JScrollPane scrollPane = new JScrollPane(resultadoArea);
+        scrollPane.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
+        
         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Adicionar componentes ao painel
@@ -316,5 +323,41 @@ public class PesquisaPanel extends BasePanel {
     protected void clearFields() {
         pesquisaField.setText("");
         resultadoArea.setText("");
+    }
+    
+    // Classe interna para criar uma borda arredondada
+    private static class RoundedBorder extends AbstractBorder {
+        private final Color cor;
+        private final int espessura;
+        private final int raio;
+        
+        public RoundedBorder(Color cor, int espessura, int raio) {
+            this.cor = cor;
+            this.espessura = espessura;
+            this.raio = raio;
+        }
+        
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            g2.setColor(cor);
+            g2.setStroke(new BasicStroke(espessura));
+            g2.draw(new RoundRectangle2D.Float(x, y, width - 1, height - 1, raio, raio));
+            
+            g2.dispose();
+        }
+        
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(espessura + 2, espessura + 2, espessura + 2, espessura + 2);
+        }
+        
+        @Override
+        public Insets getBorderInsets(Component c, Insets insets) {
+            insets.left = insets.right = insets.top = insets.bottom = espessura + 2;
+            return insets;
+        }
     }
 }
