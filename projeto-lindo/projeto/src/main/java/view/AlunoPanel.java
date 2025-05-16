@@ -4,19 +4,17 @@ import controller.AlunoController;
 import controller.TurmaController;
 import model.Aluno;
 import model.Turma;
+import view.components.Button;
 import view.components.Input;
 
 import javax.swing.*;
-import javax.swing.text.MaskFormatter;
-
 import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class AlunoPanel extends JPanel {
-    private MainFrame mainFrame;
+public class AlunoPanel extends BasePanel {
     private AlunoController alunoController;
     private TurmaController turmaController;
     
@@ -31,182 +29,69 @@ public class AlunoPanel extends JPanel {
     
     private Aluno alunoAtual;
     
+    private Button salvarButton;
+    private Button editarButton;
+    private Button excluirButton;
+    
     public AlunoPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        super(mainFrame, "Registrar Aluno");
         this.alunoController = new AlunoController();
         this.turmaController = new TurmaController();
         
-        setLayout(new BorderLayout());
-        setBackground(new Color(68, 68, 68));
-        
-        // Painel de título
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(68, 68, 68));
-        JLabel titleLabel = new JLabel("Registrar de Aluno");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titlePanel.add(titleLabel);
-        
-        // Painel de formulário
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(new Color(68, 68, 68));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
+        initializeComponents();
+        setupListeners();
+    }
+    
+    @Override
+    protected void initializeComponents() {
         // Nome
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        JLabel nomeLabel = new JLabel("Nome");
-        nomeLabel.setForeground(Color.WHITE);
-        formPanel.add(nomeLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        nomeField = new JTextField(20);
-        formPanel.add(nomeField, gbc);
+        form.addLabel("Nome", 0, 0);
+        nomeField = form.addTextField(1, 0, 2);
         
         // Data de Nascimento
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        JLabel dataNascimentoLabel = new JLabel("Data de Nascimento");
-        dataNascimentoLabel.setForeground(Color.WHITE);
-        formPanel.add(dataNascimentoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        dataNascimentoField = new JTextField(20);
+        form.addLabel("Data de Nascimento", 0, 1);
+        dataNascimentoField = form.addTextField(1, 1, 2);
         dataNascimentoField.setToolTipText("Formato: dd/MM/yyyy");
-        formPanel.add(dataNascimentoField, gbc);
         
         // CPF
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        JLabel cpfLabel = new JLabel("CPF");
-        cpfLabel.setForeground(Color.WHITE);
-        formPanel.add(cpfLabel, gbc);
+        form.addLabel("CPF", 0, 2);
+        cpfField = form.addTextField(1, 2, 2);
         
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        cpfField = new JTextField(20);
-        formPanel.add(cpfField, gbc);
+        // Telefone
+        form.addLabel("Telefone", 0, 3);
+        telefoneField = form.addTextField(1, 3, 2);
         
-        // Label: Telefone
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        JLabel telefoneLabel = new JLabel("Telefone:");
-        telefoneLabel.setForeground(Color.WHITE);
-        formPanel.add(telefoneLabel, gbc);
-
-        // Campo: Telefone
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        try {
-            MaskFormatter telefoneFormatter = new MaskFormatter("(##) #####-####");
-            telefoneFormatter.setPlaceholderCharacter('_');
-            telefoneField = new JFormattedTextField(telefoneFormatter);
-        } catch (ParseException e) {
-            telefoneField = new JFormattedTextField();
-        }
-        formPanel.add(telefoneField, gbc);
-
-
         // Email
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 1;
-        JLabel emailLabel = new JLabel("Email");
-        emailLabel.setForeground(Color.WHITE);
-        formPanel.add(emailLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        emailField = new JTextField(20);
-        formPanel.add(emailField, gbc);
+        form.addLabel("Email", 0, 4);
+        emailField = form.addTextField(1, 4, 2);
         
         // Gênero
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 1;
-        JLabel generoLabel = new JLabel("Gênero");
-        generoLabel.setForeground(Color.WHITE);
-        formPanel.add(generoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
+        form.addLabel("Gênero", 0, 5);
+        generoField = form.addComboBox(1, 5, 2);
         String[] generos = {"Masculino", "Feminino", "Outro"};
-        generoField = new JComboBox<>(generos);
-        formPanel.add(generoField, gbc);
+        for (String genero : generos) {
+            generoField.addItem(genero);
+        }
         
         // Endereço
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.gridwidth = 1;
-        JLabel enderecoLabel = new JLabel("Endereço");
-        enderecoLabel.setForeground(Color.WHITE);
-        formPanel.add(enderecoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        gbc.gridwidth = 2;
-        enderecoArea = new JTextArea(5, 20);
-        enderecoArea.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(enderecoArea);
-        formPanel.add(scrollPane, gbc);
+        form.addLabel("Endereço", 0, 6);
+        enderecoArea = form.addTextArea(1, 6, 2);
         
         // Turma
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        gbc.gridwidth = 1;
-        JLabel turmaLabel = new JLabel("Turma");
-        turmaLabel.setForeground(Color.WHITE);
-        formPanel.add(turmaLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 7;
-        gbc.gridwidth = 2;
-        turmaComboBox = new JComboBox<>();
+        form.addLabel("Turma", 0, 7);
+        turmaComboBox = form.addComboBox(1, 7, 2);
         atualizarTurmas();
-        formPanel.add(turmaComboBox, gbc);
         
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(68, 68, 68));
-        
-        JButton salvarButton = new JButton("Salvar");
-        salvarButton.setBackground(new Color(51, 51, 51));
-        salvarButton.setForeground(Color.WHITE);
-        
-        JButton editarButton = new JButton("Editar");
-        editarButton.setBackground(new Color(51, 51, 51));
-        editarButton.setForeground(Color.WHITE);
-        
-        JButton excluirButton = new JButton("Excluir");
-        excluirButton.setBackground(Color.RED);
-        excluirButton.setForeground(Color.WHITE);
-        
-        salvarButton.addActionListener(e -> salvarAluno());
-        editarButton.addActionListener(e -> editarAluno());
-        excluirButton.addActionListener(e -> excluirAluno());
+        // Buttons
+        salvarButton = createSaveButton();
+        editarButton = createEditButton();
+        excluirButton = createDeleteButton();
         
         buttonPanel.add(salvarButton);
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        add(titlePanel, BorderLayout.NORTH);
-        add(formPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-        
+        // Apply input validations
         Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
         Input.aplicarMascaraTelefone(telefoneField);
@@ -220,7 +105,14 @@ public class AlunoPanel extends JPanel {
         Input.adicionarFeedbackVisual(dataNascimentoField, Input.TipoValidacao.DATA);
         Input.adicionarFeedbackVisual(cpfField, Input.TipoValidacao.CPF);
         Input.adicionarFeedbackVisual(emailField, Input.TipoValidacao.EMAIL);
-        }
+    }
+    
+    @Override
+    protected void setupListeners() {
+        salvarButton.addActionListener(e -> salvarAluno());
+        editarButton.addActionListener(e -> editarAluno());
+        excluirButton.addActionListener(e -> excluirAluno());
+    }
     
     public void atualizarListaTurmas() {
         atualizarTurmas();
@@ -254,8 +146,7 @@ public class AlunoPanel extends JPanel {
                 return;
             }
             
-            if (!Input.validarCampo(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!") ||
-                !Input.validarCampo(cpfField, Input.TipoValidacao.CPF, "Formato de CPF inválido!")) {
+            if (!Input.validarCampo(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!")) {
                 return;
             }
 
@@ -272,7 +163,7 @@ public class AlunoPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Selecione o gênero!", "Erro", JOptionPane.ERROR_MESSAGE);
                 generoField.requestFocus();
                 return;
-        }
+            }
             
             if (endereco.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "O endereço é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -304,7 +195,7 @@ public class AlunoPanel extends JPanel {
                 alunoController.matricularAlunoEmTurma(alunoAtual, turma);
             }
             
-            limparCampos();
+            clearFields();
             JOptionPane.showMessageDialog(this, "Aluno salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
         } catch (ParseException e) {
@@ -332,7 +223,7 @@ public class AlunoPanel extends JPanel {
             int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este aluno?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
                 alunoController.excluirAluno(alunoAtual);
-                limparCampos();
+                clearFields();
                 JOptionPane.showMessageDialog(this, "Aluno excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
@@ -362,12 +253,14 @@ public class AlunoPanel extends JPanel {
         }
     }
     
-    private void limparCampos() {
+    @Override
+    protected void clearFields() {
         alunoAtual = null;
         nomeField.setText("");
         dataNascimentoField.setText("");
         cpfField.setText("");
         emailField.setText("");
+        telefoneField.setText("");
         generoField.setSelectedIndex(-1);
         enderecoArea.setText("");
         turmaComboBox.setSelectedIndex(-1);

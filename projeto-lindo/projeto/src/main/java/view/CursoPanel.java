@@ -4,14 +4,14 @@ import controller.CursoController;
 import controller.ProfessorController;
 import model.Curso;
 import model.Professor;
+import view.components.Button;
 import view.components.Input;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class CursoPanel extends JPanel {
-    private MainFrame mainFrame;
+public class CursoPanel extends BasePanel {
     private CursoController cursoController;
     private ProfessorController professorController;
     
@@ -21,103 +21,44 @@ public class CursoPanel extends JPanel {
     
     private Curso cursoAtual;
     
+    private Button salvarButton;
+    private Button editarButton;
+    private Button excluirButton;
+    
     public CursoPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        super(mainFrame, "Registrar Curso");
         this.cursoController = new CursoController();
         this.professorController = new ProfessorController();
         
-        setLayout(new BorderLayout());
-        setBackground(new Color(68, 68, 68));
-        
-        // Painel de título
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(68, 68, 68));
-        JLabel titleLabel = new JLabel("Registrar Curso");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titlePanel.add(titleLabel);
-        
-        // Painel de formulário
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(new Color(68, 68, 68));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
+        initializeComponents();
+        setupListeners();
+    }
+    
+    @Override
+    protected void initializeComponents() {
         // Nome
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        JLabel nomeLabel = new JLabel("Nome");
-        nomeLabel.setForeground(Color.WHITE);
-        formPanel.add(nomeLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        nomeField = new JTextField(20);
-        formPanel.add(nomeField, gbc);
+        form.addLabel("Nome", 0, 0);
+        nomeField = form.addTextField(1, 0, 2);
         
         // Professor
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        JLabel professorLabel = new JLabel("Professor");
-        professorLabel.setForeground(Color.WHITE);
-        formPanel.add(professorLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        professorComboBox = new JComboBox<>();
+        form.addLabel("Professor", 0, 1);
+        professorComboBox = form.addComboBox(1, 1, 2);
         atualizarProfessores();
-        formPanel.add(professorComboBox, gbc);
         
         // Descrição
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        JLabel descricaoLabel = new JLabel("Descrição");
-        descricaoLabel.setForeground(Color.WHITE);
-        formPanel.add(descricaoLabel, gbc);
+        form.addLabel("Descrição", 0, 2);
+        descricaoArea = form.addTextArea(1, 2, 2);
         
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        descricaoArea = new JTextArea(5, 20);
-        descricaoArea.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(descricaoArea);
-        formPanel.add(scrollPane, gbc);
-        
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(68, 68, 68));
-        
-        JButton salvarButton = new JButton("Salvar");
-        salvarButton.setBackground(new Color(51, 51, 51));
-        salvarButton.setForeground(Color.WHITE);
-        
-        JButton editarButton = new JButton("Editar");
-        editarButton.setBackground(new Color(51, 51, 51));
-        editarButton.setForeground(Color.WHITE);
-        
-        JButton excluirButton = new JButton("Excluir");
-        excluirButton.setBackground(Color.RED);
-        excluirButton.setForeground(Color.WHITE);
-        
-        salvarButton.addActionListener(e -> salvarCurso());
-        editarButton.addActionListener(e -> editarCurso());
-        excluirButton.addActionListener(e -> excluirCurso());
+        // Buttons
+        salvarButton = createSaveButton();
+        editarButton = createEditButton();
+        excluirButton = createDeleteButton();
         
         buttonPanel.add(salvarButton);
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        add(titlePanel, BorderLayout.NORTH);
-        add(formPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-        
-
+        // Apply input validations
         Input.definirLimiteCaracteres(nomeField, 50);
         Input.definirLimiteCaracteres(descricaoArea, 500);
         
@@ -125,17 +66,24 @@ public class CursoPanel extends JPanel {
         Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
     }
     
-        public void atualizarListaProfessores() {
-            atualizarProfessores();
-        }
+    @Override
+    protected void setupListeners() {
+        salvarButton.addActionListener(e -> salvarCurso());
+        editarButton.addActionListener(e -> editarCurso());
+        excluirButton.addActionListener(e -> excluirCurso());
+    }
+    
+    public void atualizarListaProfessores() {
+        atualizarProfessores();
+    }
 
-        public void atualizarProfessores() {
-            professorComboBox.removeAllItems();
-            List<Professor> professores = professorController.buscarTodosProfessores();
-            for (Professor professor : professores) {
-                professorComboBox.addItem(professor);
-            }
+    public void atualizarProfessores() {
+        professorComboBox.removeAllItems();
+        List<Professor> professores = professorController.buscarTodosProfessores();
+        for (Professor professor : professores) {
+            professorComboBox.addItem(professor);
         }
+    }
     
     private void salvarCurso() {
         try {
@@ -169,7 +117,7 @@ public class CursoPanel extends JPanel {
             cursoController.salvarCurso(cursoAtual);
             mainFrame.notificarCursoSalvo();
             
-            limparCampos();
+            clearFields();
             JOptionPane.showMessageDialog(this, "Curso salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
         } catch (Exception e) {
@@ -195,7 +143,7 @@ public class CursoPanel extends JPanel {
             int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este curso?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
                 cursoController.excluirCurso(cursoAtual);
-                limparCampos();
+                clearFields();
                 JOptionPane.showMessageDialog(this, "Curso excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
@@ -218,7 +166,8 @@ public class CursoPanel extends JPanel {
         }
     }
     
-    private void limparCampos() {
+    @Override
+    protected void clearFields() {
         cursoAtual = null;
         nomeField.setText("");
         descricaoArea.setText("");

@@ -4,6 +4,7 @@ import controller.CursoController;
 import controller.TurmaController;
 import model.Curso;
 import model.Turma;
+import view.components.Button;
 import view.components.Input;
 
 import javax.swing.*;
@@ -14,8 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class TurmaPanel extends JPanel {
-    private MainFrame mainFrame;
+public class TurmaPanel extends BasePanel {
     private TurmaController turmaController;
     private CursoController cursoController;
     
@@ -31,145 +31,61 @@ public class TurmaPanel extends JPanel {
     private static final Pattern PADRAO_NOME_TURMA = Pattern.compile("^[a-zA-Z0-9]+$");
     private static final Pattern PADRAO_PERIODO = Pattern.compile("^[a-zA-ZÀ-ú]+$");
     
+    private Button salvarButton;
+    private Button editarButton;
+    private Button excluirButton;
+    
     public TurmaPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        super(mainFrame, "Registrar Turma");
         this.turmaController = new TurmaController();
         this.cursoController = new CursoController();
         
-        setLayout(new BorderLayout());
-        setBackground(new Color(68, 68, 68));
-        
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(68, 68, 68));
-        JLabel titleLabel = new JLabel("Registrar Turma");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titlePanel.add(titleLabel);
-        
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(new Color(68, 68, 68));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
+        initializeComponents();
+        setupListeners();
+    }
+    
+    @Override
+    protected void initializeComponents() {
         // Nome (Código da Turma)
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        JLabel nomeLabel = new JLabel("Nome");
-        nomeLabel.setForeground(Color.WHITE);
-        formPanel.add(nomeLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        nomeField = new JTextField(20);
+        form.addLabel("Nome", 0, 0);
+        nomeField = form.addTextField(1, 0, 2);
         nomeField.setToolTipText("Ex: 1A, 1B, 2A, 2B");
-        formPanel.add(nomeField, gbc);
         
         // Curso
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        JLabel cursoLabel = new JLabel("Curso");
-        cursoLabel.setForeground(Color.WHITE);
-        formPanel.add(cursoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        cursoComboBox = new JComboBox<>();
+        form.addLabel("Curso", 0, 1);
+        cursoComboBox = form.addComboBox(1, 1, 2);
         atualizarCursos();
-        formPanel.add(cursoComboBox, gbc);
         
         // Período
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        JLabel periodoLabel = new JLabel("Período");
-        periodoLabel.setForeground(Color.WHITE);
-        formPanel.add(periodoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        periodoField = new JTextField(20);
+        form.addLabel("Período", 0, 2);
+        periodoField = form.addTextField(1, 2, 2);
         periodoField.setToolTipText("Ex: Manhã, Tarde, Noite");
-        formPanel.add(periodoField, gbc);
         
         // Capacidade
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        JLabel capacidadeLabel = new JLabel("Capacidade");
-        capacidadeLabel.setForeground(Color.WHITE);
-        formPanel.add(capacidadeLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        capacidadeField = new JTextField(20);
+        form.addLabel("Capacidade", 0, 3);
+        capacidadeField = form.addTextField(1, 3, 2);
         capacidadeField.setToolTipText("Máximo: 40 alunos");
-        formPanel.add(capacidadeField, gbc);
         
         // Data Início
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 1;
-        JLabel dataInicioLabel = new JLabel("Data início");
-        dataInicioLabel.setForeground(Color.WHITE);
-        formPanel.add(dataInicioLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        dataInicioField = new JTextField(20);
+        form.addLabel("Data início", 0, 4);
+        dataInicioField = form.addTextField(1, 4, 2);
         dataInicioField.setToolTipText("Formato: dd/MM/yyyy");
-        formPanel.add(dataInicioField, gbc);
         
         // Data Término
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 1;
-        JLabel dataTerminoLabel = new JLabel("Data término");
-        dataTerminoLabel.setForeground(Color.WHITE);
-        formPanel.add(dataTerminoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        dataTerminoField = new JTextField(20);
+        form.addLabel("Data término", 0, 5);
+        dataTerminoField = form.addTextField(1, 5, 2);
         dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
-        formPanel.add(dataTerminoField, gbc);
         
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(68, 68, 68));
-        
-        JButton salvarButton = new JButton("Salvar");
-        salvarButton.setBackground(new Color(51, 51, 51));
-        salvarButton.setForeground(Color.WHITE);
-        
-        JButton editarButton = new JButton("Editar");
-        editarButton.setBackground(new Color(51, 51, 51));
-        editarButton.setForeground(Color.WHITE);
-        
-        JButton excluirButton = new JButton("Excluir");
-        excluirButton.setBackground(Color.RED);
-        excluirButton.setForeground(Color.WHITE);
-        
-        salvarButton.addActionListener(e -> salvarTurma());
-        editarButton.addActionListener(e -> editarTurma());
-        excluirButton.addActionListener(e -> excluirTurma());
+        // Buttons
+        salvarButton = createSaveButton();
+        editarButton = createEditButton();
+        excluirButton = createDeleteButton();
         
         buttonPanel.add(salvarButton);
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        add(titlePanel, BorderLayout.NORTH);
-        add(formPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-        
+        // Apply input validations
         Input.aplicarMascaraData(dataInicioField);
         Input.aplicarMascaraData(dataTerminoField);
         Input.definirLimiteCaracteres(nomeField, 10);
@@ -190,9 +106,17 @@ public class TurmaPanel extends JPanel {
         Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
     }
     
+    @Override
+    protected void setupListeners() {
+        salvarButton.addActionListener(e -> salvarTurma());
+        editarButton.addActionListener(e -> editarTurma());
+        excluirButton.addActionListener(e -> excluirTurma());
+    }
+    
     public void atualizarListaCursos() {
         atualizarCursos();
-        }
+    }
+    
     public void atualizarCursos() {
         cursoComboBox.removeAllItems();
         List<Curso> cursos = cursoController.buscarTodosCursos();
@@ -271,7 +195,7 @@ public class TurmaPanel extends JPanel {
 
             mainFrame.notificarTurmaSalva();
             
-            limparCampos();
+            clearFields();
             JOptionPane.showMessageDialog(this, "Turma salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
         } catch (ParseException e) {
@@ -299,7 +223,7 @@ public class TurmaPanel extends JPanel {
             int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir esta turma?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
                 turmaController.excluirTurma(turmaAtual);
-                limparCampos();
+                clearFields();
                 JOptionPane.showMessageDialog(this, "Turma excluída com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
@@ -327,7 +251,8 @@ public class TurmaPanel extends JPanel {
         }
     }
     
-    private void limparCampos() {
+    @Override
+    protected void clearFields() {
         turmaAtual = null;
         nomeField.setText("");
         periodoField.setText("");

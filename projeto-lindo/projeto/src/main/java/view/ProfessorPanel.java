@@ -2,6 +2,7 @@ package view;
 
 import controller.ProfessorController;
 import model.Professor;
+import view.components.Button;
 import view.components.Input;
 
 import javax.swing.*;
@@ -10,8 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ProfessorPanel extends JPanel {
-    private MainFrame mainFrame;
+public class ProfessorPanel extends BasePanel {
     private ProfessorController professorController;
     
     private JTextField nomeField;
@@ -22,128 +22,51 @@ public class ProfessorPanel extends JPanel {
     
     private Professor professorAtual;
     
+    private Button salvarButton;
+    private Button editarButton;
+    private Button excluirButton;
+    
     public ProfessorPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        super(mainFrame, "Registrar Professor");
         this.professorController = new ProfessorController();
         
-        setLayout(new BorderLayout());
-        setBackground(new Color(68, 68, 68));
-        
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(68, 68, 68));
-        JLabel titleLabel = new JLabel("Registrar Professor");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titlePanel.add(titleLabel);
-        
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(new Color(68, 68, 68));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
+        initializeComponents();
+        setupListeners();
+    }
+    
+    @Override
+    protected void initializeComponents() {
         // Nome
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        JLabel nomeLabel = new JLabel("Nome");
-        nomeLabel.setForeground(Color.WHITE);
-        formPanel.add(nomeLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        nomeField = new JTextField(20);
-        formPanel.add(nomeField, gbc);
+        form.addLabel("Nome", 0, 0);
+        nomeField = form.addTextField(1, 0, 2);
         
         // Data de Nascimento
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        JLabel dataNascimentoLabel = new JLabel("Data de Nascimento");
-        dataNascimentoLabel.setForeground(Color.WHITE);
-        formPanel.add(dataNascimentoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        dataNascimentoField = new JTextField(20);
+        form.addLabel("Data de Nascimento", 0, 1);
+        dataNascimentoField = form.addTextField(1, 1, 2);
         dataNascimentoField.setToolTipText("Formato: dd/MM/yyyy");
-        formPanel.add(dataNascimentoField, gbc);
         
         // CPF
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        JLabel cpfLabel = new JLabel("CPF");
-        cpfLabel.setForeground(Color.WHITE);
-        formPanel.add(cpfLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        cpfField = new JTextField(20);
-        formPanel.add(cpfField, gbc);
+        form.addLabel("CPF", 0, 2);
+        cpfField = form.addTextField(1, 2, 2);
         
         // Endereço
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 1;
-        JLabel enderecoLabel = new JLabel("Endereço");
-        enderecoLabel.setForeground(Color.WHITE);
-        formPanel.add(enderecoLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        enderecoArea = new JTextArea(5, 20);
-        enderecoArea.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(enderecoArea);
-        formPanel.add(scrollPane, gbc);
+        form.addLabel("Endereço", 0, 3);
+        enderecoArea = form.addTextArea(1, 3, 2);
         
         // Carteirinha de Licenciatura
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 1;
-        JLabel carteirinhaLabel = new JLabel("Carteirinha de Licenciatura");
-        carteirinhaLabel.setForeground(Color.WHITE);
-        formPanel.add(carteirinhaLabel, gbc);
+        form.addLabel("Carteirinha de Licenciatura", 0, 4);
+        carteirinhaField = form.addTextField(1, 4, 2);
         
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        carteirinhaField = new JTextField(20);
-        formPanel.add(carteirinhaField, gbc);
-        
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(68, 68, 68));
-        
-        JButton salvarButton = new JButton("Salvar");
-        salvarButton.setBackground(new Color(51, 51, 51));
-        salvarButton.setForeground(Color.WHITE);
-        
-        JButton editarButton = new JButton("Editar");
-        editarButton.setBackground(new Color(51, 51, 51));
-        editarButton.setForeground(Color.WHITE);
-        
-        JButton excluirButton = new JButton("Excluir");
-        excluirButton.setBackground(Color.RED);
-        excluirButton.setForeground(Color.WHITE);
-        
-        salvarButton.addActionListener(e -> salvarProfessor());
-        editarButton.addActionListener(e -> editarProfessor());
-        excluirButton.addActionListener(e -> excluirProfessor());
+        // Buttons
+        salvarButton = createSaveButton();
+        editarButton = createEditButton();
+        excluirButton = createDeleteButton();
         
         buttonPanel.add(salvarButton);
         buttonPanel.add(editarButton);
         buttonPanel.add(excluirButton);
         
-        add(titlePanel, BorderLayout.NORTH);
-        add(formPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-        
-        // Aplica as máscaras e validações aos campos
+        // Apply input validations
         Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
         Input.definirLimiteCaracteres(nomeField, 50);
@@ -155,9 +78,15 @@ public class ProfessorPanel extends JPanel {
         Input.adicionarValidacao(dataNascimentoField, Input.TipoValidacao.REQUERIDO, "A data de nascimento é obrigatória!");
         Input.adicionarValidacao(dataNascimentoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
         Input.adicionarValidacao(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!");
-        Input.adicionarValidacao(cpfField, Input.TipoValidacao.CPF, "Formato de CPF inválido!");
         Input.adicionarValidacaoPersonalizada(enderecoArea, Input.TipoValidacao.REQUERIDO, "O endereço é obrigatório!");
         Input.adicionarValidacao(carteirinhaField, Input.TipoValidacao.REQUERIDO, "A carteirinha de licenciatura é obrigatória!");
+    }
+    
+    @Override
+    protected void setupListeners() {
+        salvarButton.addActionListener(e -> salvarProfessor());
+        editarButton.addActionListener(e -> editarProfessor());
+        excluirButton.addActionListener(e -> excluirProfessor());
     }
     
     private void salvarProfessor() {
@@ -178,11 +107,6 @@ public class ProfessorPanel extends JPanel {
                 return;
             }
             
-            /*if (!Input.isCPFValido(cpf)) {
-                JOptionPane.showMessageDialog(this, "Formato de CPF inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }*/
-            
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             Date dataNascimento = dateFormat.parse(dataNascimentoStr);
             
@@ -200,7 +124,7 @@ public class ProfessorPanel extends JPanel {
             
             mainFrame.notificarProfessorSalvo();
 
-            limparCampos();
+            clearFields();
             JOptionPane.showMessageDialog(this, "Professor salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             
         } catch (ParseException e) {
@@ -228,7 +152,7 @@ public class ProfessorPanel extends JPanel {
             int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este professor?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
                 professorController.excluirProfessor(professorAtual);
-                limparCampos();
+                clearFields();
                 JOptionPane.showMessageDialog(this, "Professor excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
@@ -246,7 +170,8 @@ public class ProfessorPanel extends JPanel {
         carteirinhaField.setText(professor.getCarteirinhaLicenciatura());
     }
     
-    private void limparCampos() {
+    @Override
+    protected void clearFields() {
         professorAtual = null;
         nomeField.setText("");
         dataNascimentoField.setText("");

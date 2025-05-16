@@ -1,15 +1,22 @@
 package view;
 
+import view.components.Button;
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainFrame extends JFrame {
-    private JPanel contentPanel;
+    private JPanel painelConteudo;
+    private JPanel painelLateral;
     private AlunoPanel alunoPanel;
     private TurmaPanel turmaPanel;
     private CursoPanel cursoPanel;
     private ProfessorPanel professorPanel;
     private PesquisaPanel pesquisaPanel;
+    
+    private List<Button> botoesMenu;
+    private int botaoAtivoIndex = 0;
 
     public MainFrame() {
         setTitle("Sistema de Matrícula de Alunos");
@@ -23,78 +30,99 @@ public class MainFrame extends JFrame {
         professorPanel = new ProfessorPanel(this);
         pesquisaPanel = new PesquisaPanel(this);
 
-        contentPanel = new JPanel(new BorderLayout());
-        setContentPane(contentPanel);
+        painelConteudo = new JPanel(new BorderLayout());
+        setContentPane(painelConteudo);
         
-
-        JPanel menuPanel = createMenuPanel();
-        contentPanel.add(menuPanel, BorderLayout.WEST);
+        painelLateral = criarPainelLateral();
+        painelConteudo.add(painelLateral, BorderLayout.WEST);
         
-        showPanel(alunoPanel);
+        // Definir o primeiro botão como selecionado por padrão
+        botoesMenu.get(botaoAtivoIndex).setSelected(true);
+        mostrarPainel(alunoPanel);
     }
     
-    private JPanel createMenuPanel() {
-        JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new GridLayout(5, 1, 10, 10));
-        menuPanel.setBackground(new Color(51, 51, 51));
-        menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    private JPanel criarPainelLateral() {
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setBackground(new Color(34, 34, 34)); // Cor de fundo escura
+        sidebar.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         
-        JButton alunoButton = createMenuButton("Aluno");
-        JButton turmaButton = createMenuButton("Turma");
-        JButton cursoButton = createMenuButton("Curso");
-        JButton professorButton = createMenuButton("Professor");
-        JButton pesquisarButton = createMenuButton("Pesquisar");
+        botoesMenu = new ArrayList<>();
         
-        alunoButton.addActionListener(e -> showPanel(alunoPanel));
-        turmaButton.addActionListener(e -> showPanel(turmaPanel));
-        cursoButton.addActionListener(e -> showPanel(cursoPanel));
-        professorButton.addActionListener(e -> showPanel(professorPanel));
-        pesquisarButton.addActionListener(e -> showPanel(pesquisaPanel));
+        // Criar botões do menu
+        Button alunoButton = Button.createMenuButton("Aluno");
+        Button turmaButton = Button.createMenuButton("Turma");
+        Button cursoButton = Button.createMenuButton("Curso");
+        Button professorButton = Button.createMenuButton("Professor");
+        Button pesquisarButton = Button.createMenuButton("Pesquisar");
         
-
-        menuPanel.add(alunoButton);
-        menuPanel.add(turmaButton);
-        menuPanel.add(cursoButton);
-        menuPanel.add(professorButton);
-        menuPanel.add(pesquisarButton);
+        // Adicionar botões à lista para rastreamento
+        botoesMenu.add(alunoButton);
+        botoesMenu.add(turmaButton);
+        botoesMenu.add(cursoButton);
+        botoesMenu.add(professorButton);
+        botoesMenu.add(pesquisarButton);
         
-        return menuPanel;
+        // Adicionar action listeners
+        alunoButton.addActionListener(e -> selecionarBotao(0, alunoPanel));
+        turmaButton.addActionListener(e -> selecionarBotao(1, turmaPanel));
+        cursoButton.addActionListener(e -> selecionarBotao(2, cursoPanel));
+        professorButton.addActionListener(e -> selecionarBotao(3, professorPanel));
+        pesquisarButton.addActionListener(e -> selecionarBotao(4, pesquisaPanel));
+        
+        // Adicionar botões à barra lateral com espaçamento
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(alunoButton);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(turmaButton);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(cursoButton);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(professorButton);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(pesquisarButton);
+        sidebar.add(Box.createVerticalGlue());
+        
+        return sidebar;
     }
     
-    private JButton createMenuButton(String text) {
-        JButton button = new JButton(text);
-        button.setBackground(new Color(68, 68, 68));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+    private void selecionarBotao(int index, JPanel panel) {
+        // Desselecionar o botão atual
+        botoesMenu.get(botaoAtivoIndex).setSelected(false);
         
-        // Efeito hover
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(255, 102, 0));
-            }
-            
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(68, 68, 68));
-            }
-        });
+        // Selecionar o novo botão
+        botaoAtivoIndex = index;
+        botoesMenu.get(botaoAtivoIndex).setSelected(true);
         
-        return button;
+        // Mostrar o painel correspondente
+        mostrarPainel(panel);
     }
     
-    public void showPanel(JPanel panel) {
-
-        Component[] components = contentPanel.getComponents();
+    public void mostrarPainel(JPanel panel) {
+        // Remover todos os componentes exceto a barra lateral
+        Component[] components = painelConteudo.getComponents();
         for (Component component : components) {
-            if (component != contentPanel.getComponent(0)) {
-                contentPanel.remove(component);
+            if (component != painelLateral) {
+                painelConteudo.remove(component);
             }
         }
         
-        contentPanel.add(panel, BorderLayout.CENTER);
-        contentPanel.revalidate();
-        contentPanel.repaint();
+        // Adicionar o novo painel
+        painelConteudo.add(panel, BorderLayout.CENTER);
+        painelConteudo.revalidate();
+        painelConteudo.repaint();
+    }
+    
+    public void notificarProfessorSalvo() {
+        cursoPanel.atualizarListaProfessores();
+    }
+    
+    public void notificarCursoSalvo() {
+        turmaPanel.atualizarListaCursos();
+    }
+    
+    public void notificarTurmaSalva() {
+        alunoPanel.atualizarListaTurmas();
     }
     
     public static void main(String[] args) {
@@ -105,18 +133,15 @@ public class MainFrame extends JFrame {
         }
         
         SwingUtilities.invokeLater(() -> {
+            // Criar o frame principal primeiro (mas não mostrar ainda)
             MainFrame frame = new MainFrame();
+            
+            // Mostrar a tela de splash primeiro
+            SplashScreen splashScreen = new SplashScreen(frame);
+            splashScreen.mostrarSplash();
+            
+            // Depois mostrar o frame principal
             frame.setVisible(true);
         });
-    }
-        public void notificarProfessorSalvo() {
-            cursoPanel.atualizarListaProfessores();
-
-        }
-        public void notificarCursoSalvo() {
-            turmaPanel.atualizarListaCursos();
-    }
-        public void notificarTurmaSalva() {
-        alunoPanel.atualizarListaTurmas();
     }
 }

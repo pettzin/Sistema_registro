@@ -8,6 +8,8 @@ import model.Aluno;
 import model.Curso;
 import model.Professor;
 import model.Turma;
+import view.components.Button;
+import view.components.Input;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -18,8 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class PesquisaPanel extends JPanel {
-    private MainFrame mainFrame;
+public class PesquisaPanel extends BasePanel {
     private AlunoController alunoController;
     private TurmaController turmaController;
     private CursoController cursoController;
@@ -28,42 +29,41 @@ public class PesquisaPanel extends JPanel {
     private JTextField pesquisaField;
     private JComboBox<String> tipoComboBox;
     private JTextArea resultadoArea;
+    private Button pesquisarButton;
 
     private static final Pattern PADRAO_PESQUISA = Pattern.compile("^[a-zA-Z0-9\\s\\.\\-]+$");
 
     public PesquisaPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        super(mainFrame, "Pesquisar");
         this.alunoController = new AlunoController();
         this.turmaController = new TurmaController();
         this.cursoController = new CursoController();
         this.professorController = new ProfessorController();
+        
+        initializeComponents();
+        setupListeners();
+    }
 
-        setLayout(new BorderLayout());
-        setBackground(new Color(68, 68, 68));
-
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(68, 68, 68));
-        JLabel titleLabel = new JLabel("Pesquisar");
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titlePanel.add(titleLabel);
-
+    @Override
+    protected void initializeComponents() {
+        // Create a search panel
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchPanel.setBackground(new Color(68, 68, 68));
 
+        // Search field
         pesquisaField = new JTextField(20);
+        
+        // Type combo box
         tipoComboBox = new JComboBox<>(new String[]{"Aluno", "Turma", "Curso", "Professor"});
-        JButton pesquisarButton = new JButton("Pesquisar");
-        pesquisarButton.setBackground(new Color(51, 51, 51));
-        pesquisarButton.setForeground(Color.WHITE);
-
-        pesquisarButton.addActionListener(e -> realizarPesquisa());
-
+        
+        // Search button
+        pesquisarButton = Button.createActionButton("Pesquisar", new Color(51, 51, 51));
+        
         searchPanel.add(pesquisaField);
         searchPanel.add(tipoComboBox);
         searchPanel.add(pesquisarButton);
 
-        // Painel de resultado
+        // Result area
         JPanel resultPanel = new JPanel(new BorderLayout());
         resultPanel.setBackground(new Color(68, 68, 68));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -78,12 +78,17 @@ public class PesquisaPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(resultadoArea);
         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
-        add(titlePanel, BorderLayout.NORTH);
+        // Add components to the panel
         add(searchPanel, BorderLayout.CENTER);
         add(resultPanel, BorderLayout.SOUTH);
 
+        // Add validation
         adicionarValidacao(pesquisaField, TipoValidacao.REQUERIDO, "Digite um termo para pesquisar!");
+    }
 
+    @Override
+    protected void setupListeners() {
+        pesquisarButton.addActionListener(e -> realizarPesquisa());
     }
 
     private void realizarPesquisa() {
@@ -174,11 +179,17 @@ public class PesquisaPanel extends JPanel {
             if (turma.getCurso() != null) {
                 sb.append("Curso: ").append(turma.getCurso().getNome()).append("\n");
             }
+            List<Aluno> alunos = turma.getAlunos();
 
             sb.append("Alunos Matriculados: ").append(turma.getAlunos().size()).append("\n");
+
+            for (Aluno aluno : alunos) {
+                sb.append(" - ").append(aluno.getNome()).append("\n");
+            }
+            
             sb.append("\n");
         }
-
+        
         resultadoArea.setText(sb.toString());
     }
 
@@ -296,9 +307,14 @@ public class PesquisaPanel extends JPanel {
         });
     }
 
-
     public enum TipoValidacao {
         REQUERIDO,
         PADRAO
+    }
+    
+    @Override
+    protected void clearFields() {
+        pesquisaField.setText("");
+        resultadoArea.setText("");
     }
 }
