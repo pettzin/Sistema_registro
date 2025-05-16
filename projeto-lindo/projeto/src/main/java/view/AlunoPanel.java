@@ -34,7 +34,7 @@ public class AlunoPanel extends BasePanel {
     private Button excluirButton;
     
     public AlunoPanel(MainFrame mainFrame) {
-        super(mainFrame, "Registrar Aluno");
+        super(mainFrame, "Cadastrar Aluno");
         this.alunoController = new AlunoController();
         this.turmaController = new TurmaController();
         
@@ -82,16 +82,16 @@ public class AlunoPanel extends BasePanel {
         turmaComboBox = form.addComboBox(1, 7, 2);
         atualizarTurmas();
         
-        // Buttons
+        // Botões
         salvarButton = createSaveButton();
         editarButton = createEditButton();
         excluirButton = createDeleteButton();
         
-        buttonPanel.add(salvarButton);
-        buttonPanel.add(editarButton);
-        buttonPanel.add(excluirButton);
+        painelBotoes.add(salvarButton);
+        painelBotoes.add(editarButton);
+        painelBotoes.add(excluirButton);
         
-        // Apply input validations
+        // Aplicar validações de entrada
         Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
         Input.aplicarMascaraTelefone(telefoneField);

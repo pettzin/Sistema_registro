@@ -26,7 +26,7 @@ public class CursoPanel extends BasePanel {
     private Button excluirButton;
     
     public CursoPanel(MainFrame mainFrame) {
-        super(mainFrame, "Registrar Curso");
+        super(mainFrame, "Cadastrar Curso");
         this.cursoController = new CursoController();
         this.professorController = new ProfessorController();
         
@@ -49,16 +49,16 @@ public class CursoPanel extends BasePanel {
         form.addLabel("Descrição", 0, 2);
         descricaoArea = form.addTextArea(1, 2, 2);
         
-        // Buttons
+        // Botões
         salvarButton = createSaveButton();
         editarButton = createEditButton();
         excluirButton = createDeleteButton();
         
-        buttonPanel.add(salvarButton);
-        buttonPanel.add(editarButton);
-        buttonPanel.add(excluirButton);
+        painelBotoes.add(salvarButton);
+        painelBotoes.add(editarButton);
+        painelBotoes.add(excluirButton);
         
-        // Apply input validations
+        // Aplicar validações de entrada
         Input.definirLimiteCaracteres(nomeField, 50);
         Input.definirLimiteCaracteres(descricaoArea, 500);
         

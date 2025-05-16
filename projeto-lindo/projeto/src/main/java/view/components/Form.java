@@ -6,12 +6,12 @@ import java.awt.*;
 public class Form extends JPanel {
     
     private GridBagConstraints gbc;
-    private Color backgroundColor = new Color(68, 68, 68);
-    private Color labelColor = Color.WHITE;
+    private Color corFundo = new Color(68, 68, 68);
+    private Color corLabel = Color.WHITE;
     
     public Form() {
         setLayout(new GridBagLayout());
-        setBackground(backgroundColor);
+        setBackground(corFundo);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         gbc = new GridBagConstraints();
@@ -19,37 +19,37 @@ public class Form extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5);
     }
     
-    public Form(Color backgroundColor, Color labelColor) {
+    public Form(Color corFundo, Color corLabel) {
         this();
-        this.backgroundColor = backgroundColor;
-        this.labelColor = labelColor;
-        setBackground(backgroundColor);
+        this.corFundo = corFundo;
+        this.corLabel = corLabel;
+        setBackground(corFundo);
     }
     
-    public JLabel addLabel(String text, int gridx, int gridy) {
+    public JLabel addLabel(String texto, int gridx, int gridy) {
         gbc.gridx = gridx;
         gbc.gridy = gridy;
         gbc.gridwidth = 1;
         
-        JLabel label = new JLabel(text);
-        label.setForeground(labelColor);
+        JLabel label = new JLabel(texto);
+        label.setForeground(corLabel);
         add(label, gbc);
         
         return label;
     }
     
-    public void addComponent(JComponent component, int gridx, int gridy, int gridwidth) {
+    public void addComponent(JComponent componente, int gridx, int gridy, int gridwidth) {
         gbc.gridx = gridx;
         gbc.gridy = gridy;
         gbc.gridwidth = gridwidth;
         
-        add(component, gbc);
+        add(componente, gbc);
     }
     
     public JTextField addTextField(int gridx, int gridy, int gridwidth) {
-        JTextField textField = new JTextField(20);
-        addComponent(textField, gridx, gridy, gridwidth);
-        return textField;
+        JTextField campoTexto = new JTextField(20);
+        addComponent(campoTexto, gridx, gridy, gridwidth);
+        return campoTexto;
     }
     
     public JComboBox addComboBox(int gridx, int gridy, int gridwidth) {
@@ -59,21 +59,21 @@ public class Form extends JPanel {
     }
     
     public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
-        JTextArea textArea = new JTextArea(5, 20);
-        textArea.setLineWrap(true);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JTextArea areaTexto = new JTextArea(5, 20);
+        areaTexto.setLineWrap(true);
+        JScrollPane scrollPane = new JScrollPane(areaTexto);
         addComponent(scrollPane, gridx, gridy, gridwidth);
-        return textArea;
+        return areaTexto;
     }
     
-    public JPanel createButtonPanel(JButton... buttons) {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(backgroundColor);
+    public JPanel createButtonPanel(JButton... botoes) {
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        painelBotoes.setBackground(corFundo);
         
-        for (JButton button : buttons) {
-            buttonPanel.add(button);
+        for (JButton botao : botoes) {
+            painelBotoes.add(botao);
         }
         
-        return buttonPanel;
+        return painelBotoes;
     }
 }

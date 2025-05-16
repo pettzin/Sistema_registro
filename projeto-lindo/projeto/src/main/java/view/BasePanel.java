@@ -9,49 +9,61 @@ import java.awt.*;
 public abstract class BasePanel extends JPanel {
     protected MainFrame mainFrame;
     protected Form form;
-    protected JPanel titlePanel;
-    protected JPanel buttonPanel;
+    protected JPanel painelTitulo;
+    protected JPanel painelBotoes;
     
-    public BasePanel(MainFrame mainFrame, String title) {
+    public BasePanel(MainFrame mainFrame, String titulo) {
         this.mainFrame = mainFrame;
         
         setLayout(new BorderLayout());
-        setBackground(new Color(68, 68, 68));
+        setBackground(new Color(220, 220, 220)); // Cor de fundo cinza claro
         
-        // Create title panel
-        titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(68, 68, 68));
-        JLabel titleLabel = new JLabel(title);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        titlePanel.add(titleLabel);
+        // Criar painel de título
+        painelTitulo = new JPanel();
+        painelTitulo.setBackground(new Color(220, 220, 220));
+        JLabel tituloLabel = new JLabel(titulo);
+        tituloLabel.setForeground(Color.BLACK);
+        tituloLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        painelTitulo.add(tituloLabel);
         
-        // Create form
+        // Criar formulário
         form = new Form();
         
-        // Create button panel
-        buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(68, 68, 68));
+        // Criar painel de botões
+        painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        painelBotoes.setBackground(new Color(220, 220, 220));
         
-        // Add components to panel
-        add(titlePanel, BorderLayout.NORTH);
+        // Adicionar componentes ao painel
+        add(painelTitulo, BorderLayout.NORTH);
         add(form, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(painelBotoes, BorderLayout.SOUTH);
     }
     
     protected Button createSaveButton() {
-        Button saveButton = Button.createActionButton("Salvar", new Color(51, 51, 51));
-        return saveButton;
+        Button salvarButton = new Button("Salvar");
+        salvarButton.setBackground(new Color(51, 51, 51));
+        salvarButton.setForeground(Color.WHITE);
+        salvarButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        salvarButton.setPreferredSize(new Dimension(120, 35));
+        return salvarButton;
     }
     
     protected Button createEditButton() {
-        Button editButton = Button.createActionButton("Editar", new Color(51, 51, 51));
-        return editButton;
+        Button editarButton = new Button("Editar");
+        editarButton.setBackground(new Color(51, 51, 51));
+        editarButton.setForeground(Color.WHITE);
+        editarButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        editarButton.setPreferredSize(new Dimension(120, 35));
+        return editarButton;
     }
     
     protected Button createDeleteButton() {
-        Button deleteButton = Button.createActionButton("Excluir", Color.RED);
-        return deleteButton;
+        Button excluirButton = new Button("Excluir");
+        excluirButton.setBackground(Color.RED);
+        excluirButton.setForeground(Color.WHITE);
+        excluirButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        excluirButton.setPreferredSize(new Dimension(120, 35));
+        return excluirButton;
     }
     
     protected abstract void initializeComponents();

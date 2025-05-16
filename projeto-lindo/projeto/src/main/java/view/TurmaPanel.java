@@ -36,7 +36,7 @@ public class TurmaPanel extends BasePanel {
     private Button excluirButton;
     
     public TurmaPanel(MainFrame mainFrame) {
-        super(mainFrame, "Registrar Turma");
+        super(mainFrame, "Cadastrar Turma");
         this.turmaController = new TurmaController();
         this.cursoController = new CursoController();
         
@@ -76,16 +76,16 @@ public class TurmaPanel extends BasePanel {
         dataTerminoField = form.addTextField(1, 5, 2);
         dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
         
-        // Buttons
+        // Botões
         salvarButton = createSaveButton();
         editarButton = createEditButton();
         excluirButton = createDeleteButton();
         
-        buttonPanel.add(salvarButton);
-        buttonPanel.add(editarButton);
-        buttonPanel.add(excluirButton);
+        painelBotoes.add(salvarButton);
+        painelBotoes.add(editarButton);
+        painelBotoes.add(excluirButton);
         
-        // Apply input validations
+        // Aplicar validações de entrada
         Input.aplicarMascaraData(dataInicioField);
         Input.aplicarMascaraData(dataTerminoField);
         Input.definirLimiteCaracteres(nomeField, 10);

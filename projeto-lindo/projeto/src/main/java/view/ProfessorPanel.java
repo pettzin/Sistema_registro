@@ -27,7 +27,7 @@ public class ProfessorPanel extends BasePanel {
     private Button excluirButton;
     
     public ProfessorPanel(MainFrame mainFrame) {
-        super(mainFrame, "Registrar Professor");
+        super(mainFrame, "Cadastrar Professor");
         this.professorController = new ProfessorController();
         
         initializeComponents();
@@ -57,16 +57,16 @@ public class ProfessorPanel extends BasePanel {
         form.addLabel("Carteirinha de Licenciatura", 0, 4);
         carteirinhaField = form.addTextField(1, 4, 2);
         
-        // Buttons
+        // Botões
         salvarButton = createSaveButton();
         editarButton = createEditButton();
         excluirButton = createDeleteButton();
         
-        buttonPanel.add(salvarButton);
-        buttonPanel.add(editarButton);
-        buttonPanel.add(excluirButton);
+        painelBotoes.add(salvarButton);
+        painelBotoes.add(editarButton);
+        painelBotoes.add(excluirButton);
         
-        // Apply input validations
+        // Aplicar validações de entrada
         Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
         Input.definirLimiteCaracteres(nomeField, 50);

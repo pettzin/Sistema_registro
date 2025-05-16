@@ -46,24 +46,24 @@ public class PesquisaPanel extends BasePanel {
 
     @Override
     protected void initializeComponents() {
-        // Create a search panel
+        // Criar um painel de pesquisa
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchPanel.setBackground(new Color(68, 68, 68));
 
-        // Search field
+        // Campo de pesquisa
         pesquisaField = new JTextField(20);
         
-        // Type combo box
+        // Combo box de tipo
         tipoComboBox = new JComboBox<>(new String[]{"Aluno", "Turma", "Curso", "Professor"});
         
-        // Search button
+        // Botão de pesquisa
         pesquisarButton = Button.createActionButton("Pesquisar", new Color(51, 51, 51));
         
         searchPanel.add(pesquisaField);
         searchPanel.add(tipoComboBox);
         searchPanel.add(pesquisarButton);
 
-        // Result area
+        // Área de resultado
         JPanel resultPanel = new JPanel(new BorderLayout());
         resultPanel.setBackground(new Color(68, 68, 68));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -78,11 +78,11 @@ public class PesquisaPanel extends BasePanel {
         JScrollPane scrollPane = new JScrollPane(resultadoArea);
         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add components to the panel
+        // Adicionar componentes ao painel
         add(searchPanel, BorderLayout.CENTER);
         add(resultPanel, BorderLayout.SOUTH);
 
-        // Add validation
+        // Adicionar validação
         adicionarValidacao(pesquisaField, TipoValidacao.REQUERIDO, "Digite um termo para pesquisar!");
     }
 

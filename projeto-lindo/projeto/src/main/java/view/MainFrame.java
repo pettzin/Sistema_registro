@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("Sistema de Matrícula de Alunos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
         
         alunoPanel = new AlunoPanel(this);
@@ -46,6 +46,7 @@ public class MainFrame extends JFrame {
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(new Color(34, 34, 34)); // Cor de fundo escura
         sidebar.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        sidebar.setPreferredSize(new Dimension(220, getHeight()));
         
         botoesMenu = new ArrayList<>();
         
@@ -74,9 +75,9 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(alunoButton);
         sidebar.add(Box.createVerticalStrut(10));
-        sidebar.add(turmaButton);
-        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(cursoButton);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(turmaButton);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(professorButton);
         sidebar.add(Box.createVerticalStrut(10));
