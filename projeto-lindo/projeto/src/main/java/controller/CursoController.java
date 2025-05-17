@@ -14,26 +14,56 @@ public class CursoController {
     }
 
     public void salvarCurso(Curso curso) {
-        cursoDAO.salvar(curso);
+        try {
+            cursoDAO.salvar(curso);
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar curso: " + e.getMessage());
+            throw new RuntimeException("Erro ao salvar curso: " + e.getMessage());
+        }
     }
 
     public void excluirCurso(Curso curso) {
-        cursoDAO.excluir(curso);
+        try {
+            cursoDAO.excluir(curso);
+        } catch (Exception e) {
+            System.err.println("Erro ao excluir curso: " + e.getMessage());
+            throw new RuntimeException("Erro ao excluir curso: " + e.getMessage());
+        }
     }
 
     public Curso buscarCursoPorId(int id) {
-        return cursoDAO.buscarPorId(id);
+        try {
+            return cursoDAO.buscarPorId(id);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar curso por ID: " + e.getMessage());
+            return null;
+        }
     }
 
     public List<Curso> buscarTodosCursos() {
-        return cursoDAO.buscarTodos();
+        try {
+            return cursoDAO.buscarTodos();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar todos os cursos: " + e.getMessage());
+            return null;
+        }
     }
 
     public List<Curso> buscarCursosPorNome(String nome) {
-        return cursoDAO.buscarPorNome(nome);
+        try {
+            return cursoDAO.buscarPorNome(nome);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar cursos por nome: " + e.getMessage());
+            return null;
+        }
     }
 
     public List<Curso> buscarCursosPorProfessor(Professor professor) {
-        return cursoDAO.buscarPorProfessor(professor);
+        try {
+            return cursoDAO.buscarPorProfessor(professor);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar cursos por professor: " + e.getMessage());
+            return null;
+        }
     }
 }

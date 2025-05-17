@@ -173,7 +173,7 @@ public class PesquisaPanel extends BasePanel {
                 sb.append("Endereço: ").append(aluno.getEndereco()).append("\n");
 
                 if (aluno.getTurma() != null) {
-                    sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getNome()).append("\n");
+                    sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getPeriodo()).append("\n");
 
                     if (aluno.getTurma().getCurso() != null) {
                         sb.append("Curso: ").append(aluno.getTurma().getCurso().getNome()).append("\n");

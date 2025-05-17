@@ -71,7 +71,6 @@ public class CursoPanel extends BasePanel {
         Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
     }
     
-    // O restante do código permanece o mesmo
     @Override
     protected void setupListeners() {
         salvarButton.addActionListener(e -> salvarCurso());
@@ -85,9 +84,15 @@ public class CursoPanel extends BasePanel {
 
     public void atualizarProfessores() {
         professorComboBox.removeAllItems();
-        List<Professor> professores = professorController.buscarTodosProfessores();
-        for (Professor professor : professores) {
-            professorComboBox.addItem(professor);
+        try {
+            List<Professor> professores = professorController.buscarTodosProfessores();
+            if (professores != null) {
+                for (Professor professor : professores) {
+                    professorComboBox.addItem(professor);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar professores: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -120,11 +125,15 @@ public class CursoPanel extends BasePanel {
             cursoAtual.setDescricao(descricao);
             cursoAtual.setProfessor(professor);
             
-            cursoController.salvarCurso(cursoAtual);
-            mainFrame.notificarCursoSalvo();
-            
-            clearFields();
-            JOptionPane.showMessageDialog(this, "Curso salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            try {
+                cursoController.salvarCurso(cursoAtual);
+                mainFrame.notificarCursoSalvo();
+                
+                clearFields();
+                JOptionPane.showMessageDialog(this, "Curso salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao salvar curso no banco de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar curso: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -134,12 +143,16 @@ public class CursoPanel extends BasePanel {
     private void editarCurso() {
         String nome = JOptionPane.showInputDialog(this, "Digite o nome do curso a ser editado:");
         if (nome != null && !nome.isEmpty()) {
-            List<Curso> cursos = cursoController.buscarCursosPorNome(nome);
-            if (!cursos.isEmpty()) {
-                cursoAtual = cursos.get(0);
-                preencherCampos(cursoAtual);
-            } else {
-                JOptionPane.showMessageDialog(this, "Curso não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+            try {
+                List<Curso> cursos = cursoController.buscarCursosPorNome(nome);
+                if (cursos != null && !cursos.isEmpty()) {
+                    cursoAtual = cursos.get(0);
+                    preencherCampos(cursoAtual);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Curso não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao buscar curso: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -148,9 +161,13 @@ public class CursoPanel extends BasePanel {
         if (cursoAtual != null) {
             int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir este curso?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
-                cursoController.excluirCurso(cursoAtual);
-                clearFields();
-                JOptionPane.showMessageDialog(this, "Curso excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    cursoController.excluirCurso(cursoAtual);
+                    clearFields();
+                    JOptionPane.showMessageDialog(this, "Curso excluído com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Erro ao excluir curso: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Nenhum curso selecionado!", "Erro", JOptionPane.ERROR_MESSAGE);

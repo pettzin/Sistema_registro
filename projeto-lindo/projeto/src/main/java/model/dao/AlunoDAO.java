@@ -399,7 +399,6 @@ public class AlunoDAO {
             if (rs.next()) {
                 Turma turma = new Turma();
                 turma.setCodigo(rs.getString("codigo"));
-                turma.setNome(rs.getString("nome"));
                 turma.setCapacidade(rs.getInt("capacidade_maxima"));
                 
                 // Aqui precisaríamos buscar o curso da turma, mas isso seria feito pelo TurmaDAO

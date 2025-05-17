@@ -19,7 +19,7 @@ public class TurmaPanel extends BasePanel {
     private TurmaController turmaController;
     private CursoController cursoController;
     
-    private JTextField nomeField;
+    private JTextField codigoField; // Renomeado de nomeField para codigoField para maior clareza
     private JComboBox<Curso> cursoComboBox;
     private JTextField periodoField;
     private JTextField capacidadeField;
@@ -46,10 +46,10 @@ public class TurmaPanel extends BasePanel {
     
     @Override
     protected void initializeComponents() {
-        // Nome (Código da Turma)
-        form.addLabel("Nome", 0, 0);
-        nomeField = form.addTextField(1, 0, 2);
-        nomeField.setToolTipText("Ex: 1A, 1B, 2A, 2B");
+        // Código da Turma (renomeado para maior clareza)
+        form.addLabel("Código", 0, 0);
+        codigoField = form.addTextField(1, 0, 2);
+        codigoField.setToolTipText("Ex: 1A, 1B, 2A, 2B");
         
         // Curso
         form.addLabel("Curso", 0, 1);
@@ -93,14 +93,14 @@ public class TurmaPanel extends BasePanel {
         // Aplicar validações de entrada
         Input.aplicarMascaraData(dataInicioField);
         Input.aplicarMascaraData(dataTerminoField);
-        Input.definirLimiteCaracteres(nomeField, 10);
+        Input.definirLimiteCaracteres(codigoField, 10);
         Input.definirLimiteCaracteres(periodoField, 20);
         Input.apenasNumeros(capacidadeField);
         Input.apenasAlfabetico(periodoField);
-        Input.apenasAlfanumerico(nomeField);
+        Input.apenasAlfanumerico(codigoField);
         
-        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome da turma é obrigatório!");
-        Input.adicionarValidacaoPersonalizada(nomeField, PADRAO_NOME_TURMA, "Nome da turma inválido (apenas letras e números).");
+        Input.adicionarValidacao(codigoField, Input.TipoValidacao.REQUERIDO, "O código da turma é obrigatório!");
+        Input.adicionarValidacaoPersonalizada(codigoField, PADRAO_NOME_TURMA, "Código da turma inválido (apenas letras e números).");
         Input.adicionarValidacao(periodoField, Input.TipoValidacao.REQUERIDO, "O período é obrigatório!");
         Input.adicionarValidacaoPersonalizada(periodoField, PADRAO_PERIODO, "Período inválido (apenas letras).");
         Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.REQUERIDO, "A capacidade é obrigatória!");
@@ -111,7 +111,6 @@ public class TurmaPanel extends BasePanel {
         Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
     }
     
-    // O restante do código permanece o mesmo
     @Override
     protected void setupListeners() {
         salvarButton.addActionListener(e -> salvarTurma());
@@ -125,27 +124,33 @@ public class TurmaPanel extends BasePanel {
     
     public void atualizarCursos() {
         cursoComboBox.removeAllItems();
-        List<Curso> cursos = cursoController.buscarTodosCursos();
-        for (Curso curso : cursos) {
-            cursoComboBox.addItem(curso);
+        try {
+            List<Curso> cursos = cursoController.buscarTodosCursos();
+            if (cursos != null) {
+                for (Curso curso : cursos) {
+                    cursoComboBox.addItem(curso);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar cursos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     private void salvarTurma() {
         try {
-            String nome = nomeField.getText().trim();
+            String codigo = codigoField.getText().trim();
             String periodo = periodoField.getText().trim();
             String capacidadeStr = capacidadeField.getText().trim();
             String dataInicioStr = dataInicioField.getText().trim();
             String dataTerminoStr = dataTerminoField.getText().trim();
             
-            if (nome.isEmpty() || periodo.isEmpty() || capacidadeStr.isEmpty() || dataInicioStr.isEmpty() || dataTerminoStr.isEmpty()) {
+            if (codigo.isEmpty() || periodo.isEmpty() || capacidadeStr.isEmpty() || dataInicioStr.isEmpty() || dataTerminoStr.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            if (!PADRAO_NOME_TURMA.matcher(nome).matches()) {
-                JOptionPane.showMessageDialog(this, "Nome da turma inválido (apenas letras e números).", "Erro", JOptionPane.ERROR_MESSAGE);
+            if (!PADRAO_NOME_TURMA.matcher(codigo).matches()) {
+                JOptionPane.showMessageDialog(this, "Código da turma inválido (apenas letras e números).", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -189,20 +194,24 @@ public class TurmaPanel extends BasePanel {
                 turmaAtual = new Turma();
             }
             
-            turmaAtual.setCodigo(nome);
+            turmaAtual.setCodigo(codigo);
             turmaAtual.setPeriodo(periodo);
             turmaAtual.setCapacidade(Integer.parseInt(capacidadeStr));
             turmaAtual.setDataInicio(dataInicio);
             turmaAtual.setDataTermino(dataTermino);
             turmaAtual.setCurso(curso);
             
-            turmaController.salvarTurma(turmaAtual);
-            curso.adicionarTurma(turmaAtual);
-
-            mainFrame.notificarTurmaSalva();
-            
-            clearFields();
-            JOptionPane.showMessageDialog(this, "Turma salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            try {
+                turmaController.salvarTurma(turmaAtual);
+                curso.adicionarTurma(turmaAtual);
+                
+                mainFrame.notificarTurmaSalva();
+                
+                clearFields();
+                JOptionPane.showMessageDialog(this, "Turma salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao salvar turma no banco de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
             
         } catch (ParseException e) {
             JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -214,12 +223,16 @@ public class TurmaPanel extends BasePanel {
     private void editarTurma() {
         String codigo = JOptionPane.showInputDialog(this, "Digite o código da turma a ser editada:");
         if (codigo != null && !codigo.isEmpty()) {
-            List<Turma> turmas = turmaController.buscarTurmasPorCodigo(codigo);
-            if (!turmas.isEmpty()) {
-                turmaAtual = turmas.get(0);
-                preencherCampos(turmaAtual);
-            } else {
-                JOptionPane.showMessageDialog(this, "Turma não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
+            try {
+                List<Turma> turmas = turmaController.buscarTurmasPorCodigo(codigo);
+                if (turmas != null && !turmas.isEmpty()) {
+                    turmaAtual = turmas.get(0);
+                    preencherCampos(turmaAtual);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Turma não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao buscar turma: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -228,9 +241,13 @@ public class TurmaPanel extends BasePanel {
         if (turmaAtual != null) {
             int option = JOptionPane.showConfirmDialog(this, "Tem certeza que deseja excluir esta turma?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
-                turmaController.excluirTurma(turmaAtual);
-                clearFields();
-                JOptionPane.showMessageDialog(this, "Turma excluída com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    turmaController.excluirTurma(turmaAtual);
+                    clearFields();
+                    JOptionPane.showMessageDialog(this, "Turma excluída com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Erro ao excluir turma: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Nenhuma turma selecionada!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -240,7 +257,7 @@ public class TurmaPanel extends BasePanel {
     private void preencherCampos(Turma turma) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         
-        nomeField.setText(turma.getCodigo());
+        codigoField.setText(turma.getCodigo());
         periodoField.setText(turma.getPeriodo());
         capacidadeField.setText(String.valueOf(turma.getCapacidade()));
         dataInicioField.setText(dateFormat.format(turma.getDataInicio()));
@@ -260,7 +277,7 @@ public class TurmaPanel extends BasePanel {
     @Override
     protected void clearFields() {
         turmaAtual = null;
-        nomeField.setText("");
+        codigoField.setText("");
         periodoField.setText("");
         capacidadeField.setText("");
         dataInicioField.setText("");
