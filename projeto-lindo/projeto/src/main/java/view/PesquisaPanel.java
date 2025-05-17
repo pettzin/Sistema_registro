@@ -159,21 +159,19 @@ public class PesquisaPanel extends BasePanel {
                 return;
             }
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             StringBuilder sb = new StringBuilder();
 
             for (Aluno aluno : alunos) {
-                sb.append("Matrícula: ").append(aluno.getMatricula() != null ? aluno.getMatricula() : aluno.getId()).append("\n");
+                sb.append("Matrícula: ").append(aluno.getMatricula() != null ? aluno.getMatricula() : "Não informada").append("\n");
                 sb.append("Nome: ").append(aluno.getNome()).append("\n");
-                sb.append("Data Nascimento: ").append(aluno.getDataNascimento() != null ? dateFormat.format(aluno.getDataNascimento()) : "Não informada").append("\n");
                 sb.append("CPF: ").append(aluno.getCpf()).append("\n");
-                sb.append("Telefone: ").append(aluno.getTelefone()).append("\n");
-                sb.append("Email: ").append(aluno.getEmail()).append("\n");
-                sb.append("Gênero: ").append(aluno.getGenero()).append("\n");
-                sb.append("Endereço: ").append(aluno.getEndereco()).append("\n");
+                sb.append("Gênero: ").append(aluno.getGenero() != null ? aluno.getGenero() : "Não informado").append("\n");
+                sb.append("Email: ").append(aluno.getEmail() != null ? aluno.getEmail() : "Não informado").append("\n");
+                sb.append("Telefone: ").append(aluno.getTelefone() != null ? aluno.getTelefone() : "Não informado").append("\n");
+                sb.append("Endereço: ").append(aluno.getEndereco() != null ? aluno.getEndereco() : "Não informado").append("\n");
 
                 if (aluno.getTurma() != null) {
-                    sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getPeriodo()).append("\n");
+                    sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getNome()).append("\n");
 
                     if (aluno.getTurma().getCurso() != null) {
                         sb.append("Curso: ").append(aluno.getTurma().getCurso().getNome()).append("\n");
@@ -190,93 +188,104 @@ public class PesquisaPanel extends BasePanel {
     }
 
     private void pesquisarTurmas(String termo) {
-        List<Turma> turmas = turmaController.buscarTurmasPorCodigo(termo);
+        try {
+            List<Turma> turmas = turmaController.buscarTurmasPorCodigo(termo);
 
-        if (turmas.isEmpty()) {
-            resultadoArea.setText("Nenhuma turma encontrada.");
-            return;
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        StringBuilder sb = new StringBuilder();
-
-        for (Turma turma : turmas) {
-            sb.append("Código: ").append(turma.getCodigo()).append("\n");
-            sb.append("Período: ").append(turma.getPeriodo()).append("\n");
-            sb.append("Capacidade: ").append(turma.getCapacidade()).append("\n");
-            sb.append("Data Início: ").append(dateFormat.format(turma.getDataInicio())).append("\n");
-            sb.append("Data Término: ").append(dateFormat.format(turma.getDataTermino())).append("\n");
-
-            if (turma.getCurso() != null) {
-                sb.append("Curso: ").append(turma.getCurso().getNome()).append("\n");
+            if (turmas.isEmpty()) {
+                resultadoArea.setText("Nenhuma turma encontrada.");
+                return;
             }
-            List<Aluno> alunos = turma.getAlunos();
 
-            sb.append("Alunos Matriculados: ").append(turma.getAlunos().size()).append("\n");
+            StringBuilder sb = new StringBuilder();
 
-            for (Aluno aluno : alunos) {
-                sb.append(" - ").append(aluno.getNome()).append("\n");
+            for (Turma turma : turmas) {
+                sb.append("Código: ").append(turma.getCodigo()).append("\n");
+                sb.append("Nome: ").append(turma.getNome()).append("\n");
+                sb.append("Período: ").append(turma.getPeriodo()).append("\n");
+                sb.append("Capacidade: ").append(turma.getCapacidade()).append("\n");
+                sb.append("Data Início: ").append(turma.getDataInicio()).append("\n");
+                sb.append("Data Término: ").append(turma.getDataTermino()).append("\n");
+
+                if (turma.getCurso() != null) {
+                    sb.append("Curso: ").append(turma.getCurso().getNome()).append("\n");
+                }
+                List<Aluno> alunos = turma.getAlunos();
+
+                sb.append("Alunos Matriculados: ").append(turma.getAlunos().size()).append("\n");
+
+                for (Aluno aluno : alunos) {
+                    sb.append(" - ").append(aluno.getNome()).append("\n");
+                }
+                
+                sb.append("\n");
             }
             
-            sb.append("\n");
+            resultadoArea.setText(sb.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao pesquisar turmas: " + e.getMessage(), e);
         }
-        
-        resultadoArea.setText(sb.toString());
     }
 
     private void pesquisarCursos(String termo) {
-        List<Curso> cursos = cursoController.buscarCursosPorNome(termo);
+        try {
+            List<Curso> cursos = cursoController.buscarCursosPorNome(termo);
 
-        if (cursos.isEmpty()) {
-            resultadoArea.setText("Nenhum curso encontrado.");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Curso curso : cursos) {
-            sb.append("Nome: ").append(curso.getNome()).append("\n");
-            sb.append("Descrição: ").append(curso.getDescricao()).append("\n");
-
-            if (curso.getProfessor() != null) {
-                sb.append("Professor: ").append(curso.getProfessor().getNome()).append("\n");
+            if (cursos.isEmpty()) {
+                resultadoArea.setText("Nenhum curso encontrado.");
+                return;
             }
 
-            sb.append("Turmas: ").append(curso.getTurmas().size()).append("\n");
-            sb.append("\n");
-        }
+            StringBuilder sb = new StringBuilder();
 
-        resultadoArea.setText(sb.toString());
+            for (Curso curso : cursos) {
+                sb.append("Nome: ").append(curso.getNome()).append("\n");
+                sb.append("Descrição: ").append(curso.getDescricao()).append("\n");
+
+                if (curso.getProfessor() != null) {
+                    sb.append("Professor: ").append(curso.getProfessor().getNome()).append("\n");
+                }
+
+                sb.append("Turmas: ").append(curso.getTurmas().size()).append("\n");
+                sb.append("\n");
+            }
+
+            resultadoArea.setText(sb.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao pesquisar cursos: " + e.getMessage(), e);
+        }
     }
 
     private void pesquisarProfessores(String termo) {
-        List<Professor> professores = professorController.buscarProfessoresPorNome(termo);
+        try {
+            List<Professor> professores = professorController.buscarProfessoresPorNome(termo);
 
-        if (professores.isEmpty()) {
-            Professor professor = professorController.buscarProfessorPorCpf(termo);
-            if (professor != null) {
-                professores.add(professor);
+            if (professores.isEmpty()) {
+                Professor professor = professorController.buscarProfessorPorCpf(termo);
+                if (professor != null) {
+                    professores.add(professor);
+                }
             }
+
+            if (professores.isEmpty()) {
+                resultadoArea.setText("Nenhum professor encontrado.");
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for (Professor professor : professores) {
+                sb.append("Nome: ").append(professor.getNome()).append("\n");
+                sb.append("CPF: ").append(professor.getCpf()).append("\n");
+                sb.append("Email: ").append(professor.getEmail() != null ? professor.getEmail() : "Não informado").append("\n");
+                sb.append("Telefone: ").append(professor.getTelefone() != null ? professor.getTelefone() : "Não informado").append("\n");
+                sb.append("Endereço: ").append(professor.getEndereco()).append("\n");
+                sb.append("\n");
+            }
+
+            resultadoArea.setText(sb.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao pesquisar professores: " + e.getMessage(), e);
         }
-
-        if (professores.isEmpty()) {
-            resultadoArea.setText("Nenhum professor encontrado.");
-            return;
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        StringBuilder sb = new StringBuilder();
-
-        for (Professor professor : professores) {
-            sb.append("Nome: ").append(professor.getNome()).append("\n");
-            sb.append("Data Nascimento: ").append(dateFormat.format(professor.getDataNascimento())).append("\n");
-            sb.append("CPF: ").append(professor.getCpf()).append("\n");
-            sb.append("Endereço: ").append(professor.getEndereco()).append("\n");
-            sb.append("Carteirinha de Licenciatura: ").append(professor.getCarteirinhaLicenciatura()).append("\n");
-            sb.append("\n");
-        }
-
-        resultadoArea.setText(sb.toString());
     }
 
     /**

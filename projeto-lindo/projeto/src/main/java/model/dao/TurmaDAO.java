@@ -1,9 +1,9 @@
 package model.dao;
 
+import model.connection.DBConnection;
 import model.Aluno;
 import model.Curso;
 import model.Turma;
-import model.connection.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,10 +11,6 @@ import java.util.List;
 
 public class TurmaDAO {
     
-    /**
-     * Salva uma turma no banco de dados (insere ou atualiza)
-     * @param turma - objeto Turma a ser salvo
-     */
     public void salvar(Turma turma) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -22,71 +18,113 @@ public class TurmaDAO {
         try {
             conn = DBConnection.getConnection();
             
-            // Verifica se a turma já existe pelo código
-            Turma turmaExistente = buscarPorCodigo(turma.getCodigo()).stream()
-                                    .findFirst()
-                                    .orElse(null);
+            // Verificar se a turma já existe
+            String verificarSql = "SELECT COUNT(*) FROM Turma WHERE codigo = ?";
+            stmt = conn.prepareStatement(verificarSql);
+            stmt.setString(1, turma.getCodigo());
             
-            if (turmaExistente == null) {
+            ResultSet rs = stmt.executeQuery();
+            boolean turmaExiste = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            stmt.close();
+            
+            if (!turmaExiste) {
                 // Inserir nova turma
-                String sql = "INSERT INTO Turma (codigo, nome, periodo, capacidade_maxima, data_inicio, data_termino, id_curso) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                String sql = "INSERT INTO Turma (codigo, nome, id_curso, matricula_aluno, periodo, capacidade_maxima, data_inicio, data_fim) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                stmt = conn.prepareStatement(sql);
                 
                 stmt.setString(1, turma.getCodigo());
-                stmt.setString(2, turma.getCodigo()); // Usando o código como nome também
-                stmt.setString(3, turma.getPeriodo());
-                stmt.setInt(4, turma.getCapacidade());
-                stmt.setDate(5, new java.sql.Date(turma.getDataInicio().getTime()));
-                stmt.setDate(6, new java.sql.Date(turma.getDataTermino().getTime()));
-                stmt.setInt(7, turma.getCurso().getId());
+                stmt.setString(2, turma.getNome());
+                
+                if (turma.getCurso() != null) {
+                    stmt.setInt(3, turma.getCurso().getId());
+                } else {
+                    throw new RuntimeException("A turma deve estar associada a um curso.");
+                }
+                
+                // Verificar se há pelo menos um aluno na turma
+                if (turma.getAlunos() != null && !turma.getAlunos().isEmpty()) {
+                    stmt.setString(4, turma.getAlunos().get(0).getMatricula());
+                } else {
+                    throw new RuntimeException("A turma deve ter pelo menos um aluno matriculado.");
+                }
+                
+                stmt.setString(5, turma.getPeriodo());
+                stmt.setInt(6, turma.getCapacidade());
+                stmt.setString(7, turma.getDataInicio());
+                stmt.setString(8, turma.getDataTermino());
                 
                 stmt.executeUpdate();
                 
-                // Obtém o ID gerado
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    turma.setId(rs.getInt(1));
+                // Inserir os alunos na tabela Matricula
+                for (Aluno aluno : turma.getAlunos()) {
+                    String inserirMatriculaSql = "INSERT INTO Matricula (matricula_aluno, codigo_turma, id_curso, data_matricula) VALUES (?, ?, ?, CURDATE())";
+                    PreparedStatement stmtMatricula = conn.prepareStatement(inserirMatriculaSql);
+                    stmtMatricula.setString(1, aluno.getMatricula());
+                    stmtMatricula.setString(2, turma.getCodigo());
+                    stmtMatricula.setInt(3, turma.getCurso().getId());
+                    stmtMatricula.executeUpdate();
+                    stmtMatricula.close();
                 }
                 
-                System.out.println("Turma inserida com sucesso!");
             } else {
                 // Atualizar turma existente
-                String sql = "UPDATE Turma SET nome = ?, periodo = ?, capacidade_maxima = ?, data_inicio = ?, data_termino = ?, id_curso = ? WHERE codigo = ?";
+                String sql = "UPDATE Turma SET nome = ?, id_curso = ?, periodo = ?, capacidade_maxima = ?, data_inicio = ?, data_fim = ? WHERE codigo = ?";
                 stmt = conn.prepareStatement(sql);
                 
-                stmt.setString(1, turma.getCodigo()); // Usando o código como nome também
-                stmt.setString(2, turma.getPeriodo());
-                stmt.setInt(3, turma.getCapacidade());
-                stmt.setDate(4, new java.sql.Date(turma.getDataInicio().getTime()));
-                stmt.setDate(5, new java.sql.Date(turma.getDataTermino().getTime()));
-                stmt.setInt(6, turma.getCurso().getId());
+                stmt.setString(1, turma.getNome());
+                
+                if (turma.getCurso() != null) {
+                    stmt.setInt(2, turma.getCurso().getId());
+                } else {
+                    throw new RuntimeException("A turma deve estar associada a um curso.");
+                }
+                
+                stmt.setString(3, turma.getPeriodo());
+                stmt.setInt(4, turma.getCapacidade());
+                stmt.setString(5, turma.getDataInicio());
+                stmt.setString(6, turma.getDataTermino());
                 stmt.setString(7, turma.getCodigo());
                 
                 stmt.executeUpdate();
                 
-                // Atualiza o ID da turma
-                turma.setId(turmaExistente.getId());
+                // Atualizar alunos da turma
+                // Primeiro, remover todas as matrículas existentes
+                String excluirMatriculasSql = "DELETE FROM Matricula WHERE codigo_turma = ?";
+                PreparedStatement stmtExcluir = conn.prepareStatement(excluirMatriculasSql);
+                stmtExcluir.setString(1, turma.getCodigo());
+                stmtExcluir.executeUpdate();
+                stmtExcluir.close();
                 
-                System.out.println("Turma atualizada com sucesso!");
+                // Depois, inserir as novas matrículas
+                for (Aluno aluno : turma.getAlunos()) {
+                    String inserirMatriculaSql = "INSERT INTO Matricula (matricula_aluno, codigo_turma, id_curso, data_matricula) VALUES (?, ?, ?, CURDATE())";
+                    PreparedStatement stmtMatricula = conn.prepareStatement(inserirMatriculaSql);
+                    stmtMatricula.setString(1, aluno.getMatricula());
+                    stmtMatricula.setString(2, turma.getCodigo());
+                    stmtMatricula.setInt(3, turma.getCurso().getId());
+                    stmtMatricula.executeUpdate();
+                    stmtMatricula.close();
+                }
+                
+                // Atualizar o campo matricula_aluno na tabela Turma
+                if (turma.getAlunos() != null && !turma.getAlunos().isEmpty()) {
+                    String atualizarMatriculaAlunoSql = "UPDATE Turma SET matricula_aluno = ? WHERE codigo = ?";
+                    PreparedStatement stmtAtualizarMatricula = conn.prepareStatement(atualizarMatriculaAlunoSql);
+                    stmtAtualizarMatricula.setString(1, turma.getAlunos().get(0).getMatricula());
+                    stmtAtualizarMatricula.setString(2, turma.getCodigo());
+                    stmtAtualizarMatricula.executeUpdate();
+                    stmtAtualizarMatricula.close();
+                }
             }
-            
         } catch (SQLException e) {
             System.err.println("Erro ao salvar turma: " + e.getMessage());
+            throw new RuntimeException("Erro ao salvar turma", e);
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                System.err.println("Erro ao fechar statement: " + e.getMessage());
-            }
+            fecharRecursos(stmt);
         }
     }
     
-    /**
-     * Exclui uma turma do banco de dados
-     * @param turma - objeto Turma a ser excluído
-     */
     public void excluir(Turma turma) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -94,39 +132,28 @@ public class TurmaDAO {
         try {
             conn = DBConnection.getConnection();
             
-            // Primeiro remove as matrículas da turma (devido à chave estrangeira)
-            String sqlMatricula = "DELETE FROM Matricula WHERE codigo_turma = ?";
-            stmt = conn.prepareStatement(sqlMatricula);
+            // Excluir as matrículas da turma
+            String excluirMatriculasSql = "DELETE FROM Matricula WHERE codigo_turma = ?";
+            stmt = conn.prepareStatement(excluirMatriculasSql);
             stmt.setString(1, turma.getCodigo());
             stmt.executeUpdate();
+            stmt.close();
             
-            // Depois remove a turma
-            String sqlTurma = "DELETE FROM Turma WHERE codigo = ?";
-            stmt = conn.prepareStatement(sqlTurma);
+            // Excluir a turma
+            String sql = "DELETE FROM Turma WHERE codigo = ?";
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, turma.getCodigo());
+            
             stmt.executeUpdate();
-            
-            System.out.println("Turma excluída com sucesso!");
-            
         } catch (SQLException e) {
             System.err.println("Erro ao excluir turma: " + e.getMessage());
+            throw new RuntimeException("Erro ao excluir turma", e);
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                System.err.println("Erro ao fechar statement: " + e.getMessage());
-            }
+            fecharRecursos(stmt);
         }
     }
     
-    /**
-     * Busca uma turma pelo ID
-     * @param id - ID da turma
-     * @return Turma - objeto Turma encontrado ou null
-     */
-    public Turma buscarPorId(int id) {
+    public Turma buscarPorCodigo(String codigo) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -135,18 +162,20 @@ public class TurmaDAO {
         try {
             conn = DBConnection.getConnection();
             
-            String sql = "SELECT * FROM Turma WHERE id = ?";
+            String sql = "SELECT * FROM Turma WHERE codigo = ?";
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, id);
+            stmt.setString(1, codigo);
             
             rs = stmt.executeQuery();
             
             if (rs.next()) {
-                turma = mapearTurma(rs);
+                turma = criarTurmaDoResultSet(rs);
+                carregarCurso(turma);
+                carregarAlunos(turma);
             }
-            
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar turma por ID: " + e.getMessage());
+            System.err.println("Erro ao buscar turma por código: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar turma por código", e);
         } finally {
             fecharRecursos(stmt, rs);
         }
@@ -154,10 +183,6 @@ public class TurmaDAO {
         return turma;
     }
     
-    /**
-     * Busca todas as turmas cadastradas
-     * @return List<Turma> - lista de turmas
-     */
     public List<Turma> buscarTodos() {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -173,12 +198,14 @@ public class TurmaDAO {
             rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Turma turma = mapearTurma(rs);
+                Turma turma = criarTurmaDoResultSet(rs);
+                carregarCurso(turma);
+                carregarAlunos(turma);
                 turmas.add(turma);
             }
-            
         } catch (SQLException e) {
             System.err.println("Erro ao buscar todas as turmas: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar todas as turmas", e);
         } finally {
             fecharRecursos(stmt, rs);
         }
@@ -186,12 +213,7 @@ public class TurmaDAO {
         return turmas;
     }
     
-    /**
-     * Busca turmas pelo código (busca parcial)
-     * @param codigo - código ou parte do código a ser buscado
-     * @return List<Turma> - lista de turmas encontradas
-     */
-    public List<Turma> buscarPorCodigo(String codigo) {
+    public List<Turma> buscarTurmasPorCodigo(String codigo) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -207,12 +229,14 @@ public class TurmaDAO {
             rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Turma turma = mapearTurma(rs);
+                Turma turma = criarTurmaDoResultSet(rs);
+                carregarCurso(turma);
+                carregarAlunos(turma);
                 turmas.add(turma);
             }
-            
         } catch (SQLException e) {
             System.err.println("Erro ao buscar turmas por código: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar turmas por código", e);
         } finally {
             fecharRecursos(stmt, rs);
         }
@@ -220,110 +244,59 @@ public class TurmaDAO {
         return turmas;
     }
     
-    /**
-     * Busca turmas por curso
-     * @param curso - objeto Curso
-     * @return List<Turma> - lista de turmas do curso
-     */
-    public List<Turma> buscarPorCurso(Curso curso) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Turma> turmas = new ArrayList<>();
-        
-        try {
-            conn = DBConnection.getConnection();
-            
-            String sql = "SELECT * FROM Turma WHERE id_curso = ? ORDER BY codigo";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, curso.getId());
-            
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Turma turma = mapearTurma(rs);
-                turma.setCurso(curso);
-                turmas.add(turma);
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar turmas por curso: " + e.getMessage());
-        } finally {
-            fecharRecursos(stmt, rs);
-        }
-        
-        return turmas;
-    }
-    
-    /**
-     * Busca turmas por período
-     * @param periodo - período a ser buscado
-     * @return List<Turma> - lista de turmas do período
-     */
-    public List<Turma> buscarPorPeriodo(String periodo) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Turma> turmas = new ArrayList<>();
-        
-        try {
-            conn = DBConnection.getConnection();
-            
-            String sql = "SELECT * FROM Turma WHERE periodo = ? ORDER BY codigo";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, periodo);
-            
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Turma turma = mapearTurma(rs);
-                turmas.add(turma);
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar turmas por período: " + e.getMessage());
-        } finally {
-            fecharRecursos(stmt, rs);
-        }
-        
-        return turmas;
-    }
-    
-    /**
-     * Mapeia um ResultSet para um objeto Turma
-     * @param rs - ResultSet com dados da turma
-     * @return Turma - objeto Turma mapeado
-     * @throws SQLException - caso ocorra algum erro no acesso aos dados
-     */
-    private Turma mapearTurma(ResultSet rs) throws SQLException {
+    private Turma criarTurmaDoResultSet(ResultSet rs) throws SQLException {
         Turma turma = new Turma();
-        
-        turma.setId(rs.getInt("id"));
         turma.setCodigo(rs.getString("codigo"));
+        turma.setNome(rs.getString("nome"));
         turma.setPeriodo(rs.getString("periodo"));
         turma.setCapacidade(rs.getInt("capacidade_maxima"));
-        turma.setDataInicio(rs.getDate("data_inicio"));
-        turma.setDataTermino(rs.getDate("data_termino"));
-        
-        // Busca o curso da turma
-        int idCurso = rs.getInt("id_curso");
-        if (idCurso > 0) {
-            CursoDAO cursoDAO = new CursoDAO();
-            Curso curso = cursoDAO.buscarPorId(idCurso);
-            turma.setCurso(curso);
-        }
-        
-        // Busca os alunos da turma
-        buscarAlunosDaTurma(turma);
+        turma.setDataInicio(rs.getString("data_inicio"));
+        turma.setDataTermino(rs.getString("data_fim"));
         
         return turma;
     }
     
-    /**
-     * Busca os alunos de uma turma
-     * @param turma - objeto Turma
-     */
-    private void buscarAlunosDaTurma(Turma turma) {
+    private void carregarCurso(Turma turma) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            
+            String sql = "SELECT c.* FROM Curso c " +
+                         "INNER JOIN Turma t ON c.id = t.id_curso " +
+                         "WHERE t.codigo = ?";
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, turma.getCodigo());
+            
+            rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Curso curso = new Curso();
+                curso.setId(rs.getInt("id"));
+                curso.setNome(rs.getString("nome"));
+                curso.setDescricao(rs.getString("descricao"));
+                
+                // Carregar o professor do curso
+                int idProfessor = rs.getInt("id_professor");
+                if (idProfessor > 0) {
+                    ProfessorDAO professorDAO = new ProfessorDAO();
+                    curso.setProfessor(professorDAO.buscarPorId(idProfessor));
+                }
+                
+                turma.setCurso(curso);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao carregar curso da turma: " + e.getMessage());
+        } finally {
+            fecharRecursos(stmt, rs);
+        }
+    }
+    
+    private void carregarAlunos(Turma turma) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -333,8 +306,7 @@ public class TurmaDAO {
             
             String sql = "SELECT a.* FROM Aluno a " +
                          "INNER JOIN Matricula m ON a.matricula = m.matricula_aluno " +
-                         "WHERE m.codigo_turma = ? " +
-                         "ORDER BY a.nome";
+                         "WHERE m.codigo_turma = ?";
             
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, turma.getCodigo());
@@ -342,32 +314,33 @@ public class TurmaDAO {
             rs = stmt.executeQuery();
             
             List<Aluno> alunos = new ArrayList<>();
-            AlunoDAO alunoDAO = new AlunoDAO();
-            
             while (rs.next()) {
-                String matricula = rs.getString("matricula");
-                Aluno aluno = alunoDAO.buscarPorId(Integer.parseInt(matricula));
-                if (aluno != null) {
-                    aluno.setTurma(turma);
-                    alunos.add(aluno);
-                }
+                Aluno aluno = new Aluno();
+                aluno.setMatricula(rs.getString("matricula"));
+                aluno.setNome(rs.getString("nome"));
+                aluno.setCpf(rs.getString("cpf"));
+                aluno.setGenero(rs.getString("genero"));
+                aluno.setEmail(rs.getString("email"));
+                aluno.setTelefone(rs.getString("telefone"));
+                aluno.setEndereco(rs.getString("endereco"));
+                
+                alunos.add(aluno);
             }
             
             turma.setAlunos(alunos);
             
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar alunos da turma: " + e.getMessage());
+            System.err.println("Erro ao carregar alunos da turma: " + e.getMessage());
         } finally {
             fecharRecursos(stmt, rs);
         }
     }
     
-    /**
-     * Fecha recursos JDBC (Statement e ResultSet)
-     * @param stmt - PreparedStatement a ser fechado
-     * @param rs - ResultSet a ser fechado
-     */
-    private void fecharRecursos(PreparedStatement stmt, ResultSet rs) {
+    private void fecharRecursos(Statement stmt) {
+        fecharRecursos(stmt, null);
+    }
+    
+    private void fecharRecursos(Statement stmt, ResultSet rs) {
         try {
             if (rs != null) {
                 rs.close();

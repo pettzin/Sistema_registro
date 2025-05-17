@@ -1,44 +1,46 @@
 package view;
 
+import controller.AlunoController;
 import controller.CursoController;
 import controller.TurmaController;
+import model.Aluno;
 import model.Curso;
 import model.Turma;
 import view.components.Button;
 import view.components.Input;
+import view.components.RoundedComboBox;
+import view.components.RoundedTextField;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class TurmaPanel extends BasePanel {
     private TurmaController turmaController;
     private CursoController cursoController;
+    private AlunoController alunoController;
     
-    private JTextField codigoField; // Renomeado de nomeField para codigoField para maior clareza
-    private JComboBox<Curso> cursoComboBox;
+    private JTextField nomeField;
     private JTextField periodoField;
     private JTextField capacidadeField;
     private JTextField dataInicioField;
     private JTextField dataTerminoField;
+    private JComboBox<Curso> cursoComboBox;
+    private JList<Aluno> alunosList;
+    private DefaultListModel<Aluno> alunosListModel;
     
     private Turma turmaAtual;
-    
-    private static final Pattern PADRAO_NOME_TURMA = Pattern.compile("^[a-zA-Z0-9]+$");
-    private static final Pattern PADRAO_PERIODO = Pattern.compile("^[a-zA-ZÀ-ú]+$");
     
     private Button salvarButton;
     private Button editarButton;
     private Button excluirButton;
     
     public TurmaPanel(MainFrame mainFrame) {
-        super(mainFrame, "Registrar Turma");
+        super(mainFrame, "Cadastrar Turma");
         this.turmaController = new TurmaController();
         this.cursoController = new CursoController();
+        this.alunoController = new AlunoController();
         
         initializeComponents();
         setupListeners();
@@ -46,35 +48,48 @@ public class TurmaPanel extends BasePanel {
     
     @Override
     protected void initializeComponents() {
-        // Código da Turma (renomeado para maior clareza)
-        form.addLabel("Código", 0, 0);
-        codigoField = form.addTextField(1, 0, 2);
-        codigoField.setToolTipText("Ex: 1A, 1B, 2A, 2B");
-        
-        // Curso
-        form.addLabel("Curso", 0, 1);
-        cursoComboBox = form.addComboBox(1, 1, 2);
-        atualizarCursos();
+        // Nome (agora é o primeiro campo)
+        form.addLabel("Nome", 0, 0);
+        nomeField = form.addTextField(1, 0, 2);
         
         // Período
-        form.addLabel("Período", 0, 2);
-        periodoField = form.addTextField(1, 2, 2);
-        periodoField.setToolTipText("Ex: Manhã, Tarde, Noite");
+        form.addLabel("Período", 0, 1);
+        periodoField = form.addTextField(1, 1, 2);
         
         // Capacidade
-        form.addLabel("Capacidade", 0, 3);
-        capacidadeField = form.addTextField(1, 3, 2);
-        capacidadeField.setToolTipText("Máximo: 40 alunos");
+        form.addLabel("Capacidade", 0, 2);
+        capacidadeField = form.addTextField(1, 2, 2);
         
-        // Data Início
-        form.addLabel("Data inicio", 0, 4);
-        dataInicioField = form.addTextField(1, 4, 2);
+        // Data de Início
+        form.addLabel("Data de Início", 0, 3);
+        dataInicioField = form.addTextField(1, 3, 2);
         dataInicioField.setToolTipText("Formato: dd/MM/yyyy");
         
-        // Data Término
-        form.addLabel("Data termino", 0, 5);
-        dataTerminoField = form.addTextField(1, 5, 2);
+        // Data de Término
+        form.addLabel("Data de Término", 0, 4);
+        dataTerminoField = form.addTextField(1, 4, 2);
         dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
+        
+        // Curso
+        form.addLabel("Curso", 0, 5);
+        cursoComboBox = new RoundedComboBox<>();
+        form.addComponent(cursoComboBox, 1, 5, 2);
+        
+        // Alunos
+        form.addLabel("Alunos", 0, 6);
+        alunosListModel = new DefaultListModel<>();
+        alunosList = new JList<>(alunosListModel);
+        JScrollPane alunosScrollPane = new JScrollPane(alunosList);
+        alunosScrollPane.setPreferredSize(new Dimension(300, 150));
+        form.addComponent(alunosScrollPane, 1, 6, 2);
+        
+        // Botão para adicionar alunos
+        Button adicionarAlunoButton = Button.createActionButton("Adicionar Aluno", new Color(51, 51, 51));
+        form.addComponent(adicionarAlunoButton, 1, 7, 1);
+        
+        // Botão para remover alunos
+        Button removerAlunoButton = Button.createActionButton("Remover Aluno", new Color(51, 51, 51));
+        form.addComponent(removerAlunoButton, 2, 7, 1);
         
         // Botões
         salvarButton = createSaveButton();
@@ -93,22 +108,22 @@ public class TurmaPanel extends BasePanel {
         // Aplicar validações de entrada
         Input.aplicarMascaraData(dataInicioField);
         Input.aplicarMascaraData(dataTerminoField);
-        Input.definirLimiteCaracteres(codigoField, 10);
-        Input.definirLimiteCaracteres(periodoField, 20);
         Input.apenasNumeros(capacidadeField);
-        Input.apenasAlfabetico(periodoField);
-        Input.apenasAlfanumerico(codigoField);
+        Input.definirLimiteCaracteres(nomeField, 100);
+        Input.definirLimiteCaracteres(periodoField, 20);
         
-        Input.adicionarValidacao(codigoField, Input.TipoValidacao.REQUERIDO, "O código da turma é obrigatório!");
-        Input.adicionarValidacaoPersonalizada(codigoField, PADRAO_NOME_TURMA, "Código da turma inválido (apenas letras e números).");
+        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
         Input.adicionarValidacao(periodoField, Input.TipoValidacao.REQUERIDO, "O período é obrigatório!");
-        Input.adicionarValidacaoPersonalizada(periodoField, PADRAO_PERIODO, "Período inválido (apenas letras).");
         Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.REQUERIDO, "A capacidade é obrigatória!");
-        Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.NUMERICO, "Capacidade inválida (digite um número).");
-        Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.REQUERIDO, "A data de início é obrigatória!");
-        Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
-        Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.REQUERIDO, "A data de término é obrigatória!");
-        Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy");
+        Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.DATA, "A data de início é obrigatória!");
+        Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "A data de término é obrigatória!");
+        
+        // Carregar cursos
+        carregarCursos();
+        
+        // Configurar listeners para os botões de adicionar e remover alunos
+        adicionarAlunoButton.addActionListener(e -> adicionarAluno());
+        removerAlunoButton.addActionListener(e -> removerAluno());
     }
     
     @Override
@@ -118,119 +133,201 @@ public class TurmaPanel extends BasePanel {
         excluirButton.addActionListener(e -> excluirTurma());
     }
     
-    public void atualizarListaCursos() {
-        atualizarCursos();
-    }
-    
-    public void atualizarCursos() {
-        cursoComboBox.removeAllItems();
+    private void carregarCursos() {
         try {
             List<Curso> cursos = cursoController.buscarTodosCursos();
-            if (cursos != null) {
-                for (Curso curso : cursos) {
-                    cursoComboBox.addItem(curso);
-                }
+            cursoComboBox.removeAllItems();
+            
+            for (Curso curso : cursos) {
+                cursoComboBox.addItem(curso);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar cursos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     
+    private void adicionarAluno() {
+        String cpf = JOptionPane.showInputDialog(this, "Digite o CPF do aluno:");
+        if (cpf != null && !cpf.isEmpty()) {
+            try {
+                // Remover formatação do CPF
+                cpf = cpf.replaceAll("[^0-9]", "");
+                Aluno aluno = alunoController.buscarAlunoPorCpf(cpf);
+                if (aluno != null) {
+                    // Verificar se o aluno já está na lista
+                    boolean alunoJaAdicionado = false;
+                    for (int i = 0; i < alunosListModel.size(); i++) {
+                        if (alunosListModel.getElementAt(i).getMatricula().equals(aluno.getMatricula())) {
+                            alunoJaAdicionado = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!alunoJaAdicionado) {
+                        alunosListModel.addElement(aluno);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Este aluno já foi adicionado à turma!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Aluno não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao adicionar aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void removerAluno() {
+        int selectedIndex = alunosList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            alunosListModel.remove(selectedIndex);
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um aluno para remover!", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
     private void salvarTurma() {
         try {
-            String codigo = codigoField.getText().trim();
+            String nome = nomeField.getText().trim();
             String periodo = periodoField.getText().trim();
             String capacidadeStr = capacidadeField.getText().trim();
-            String dataInicioStr = dataInicioField.getText().trim();
-            String dataTerminoStr = dataTerminoField.getText().trim();
+            String dataInicio = dataInicioField.getText().trim();
+            String dataTermino = dataTerminoField.getText().trim();
             
-            if (codigo.isEmpty() || periodo.isEmpty() || capacidadeStr.isEmpty() || dataInicioStr.isEmpty() || dataTerminoStr.isEmpty()) {
+            if (nome.isEmpty() || periodo.isEmpty() || capacidadeStr.isEmpty() || dataInicio.isEmpty() || dataTermino.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            if (!PADRAO_NOME_TURMA.matcher(codigo).matches()) {
-                JOptionPane.showMessageDialog(this, "Código da turma inválido (apenas letras e números).", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (!PADRAO_PERIODO.matcher(periodo).matches()) {
-                JOptionPane.showMessageDialog(this, "Período inválido (apenas letras).", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
+            int capacidade;
             try {
-                int capacidade = Integer.parseInt(capacidadeStr);
-                if (capacidade <= 0 || capacidade > 40) {
-                    JOptionPane.showMessageDialog(this, "A capacidade deve ser entre 1 e 40 alunos!", "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+                capacidade = Integer.parseInt(capacidadeStr);
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Capacidade inválida. Digite um número!", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Capacidade deve ser um número!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            if (!Input.isDataValida(dataInicioStr) || !Input.isDataValida(dataTerminoStr)) {
-                JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
+            if (alunosListModel.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "A turma deve ter pelo menos um aluno!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            Date dataInicio = dateFormat.parse(dataInicioStr);
-            Date dataTermino = dateFormat.parse(dataTerminoStr);
-            
-            if (dataTermino.before(dataInicio)) {
-                JOptionPane.showMessageDialog(this, "A data de término não pode ser anterior à data de início!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            Curso curso = (Curso) cursoComboBox.getSelectedItem();
-            if (curso == null) {
-                JOptionPane.showMessageDialog(this, "Selecione um curso!", "Erro", JOptionPane.ERROR_MESSAGE);
+            Curso cursoSelecionado = (Curso) cursoComboBox.getSelectedItem();
+            if (cursoSelecionado == null) {
+                JOptionPane.showMessageDialog(this, "Selecione um curso para a turma!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
             if (turmaAtual == null) {
                 turmaAtual = new Turma();
+                // Gerar código automaticamente (sigla do curso + ano atual + número sequencial)
+                String siglaCurso = gerarSiglaCurso(cursoSelecionado.getNome());
+                String ano = String.valueOf(java.time.Year.now().getValue()).substring(2); // Últimos 2 dígitos do ano
+                String sequencial = String.format("%03d", (int)(Math.random() * 1000));
+                turmaAtual.setCodigo(siglaCurso + ano + sequencial);
             }
             
-            turmaAtual.setCodigo(codigo);
+            turmaAtual.setNome(nome);
             turmaAtual.setPeriodo(periodo);
-            turmaAtual.setCapacidade(Integer.parseInt(capacidadeStr));
+            turmaAtual.setCapacidade(capacidade);
             turmaAtual.setDataInicio(dataInicio);
             turmaAtual.setDataTermino(dataTermino);
-            turmaAtual.setCurso(curso);
+            turmaAtual.setCurso(cursoSelecionado);
             
-            try {
-                turmaController.salvarTurma(turmaAtual);
-                curso.adicionarTurma(turmaAtual);
-                
-                mainFrame.notificarTurmaSalva();
-                
-                clearFields();
-                JOptionPane.showMessageDialog(this, "Turma salva com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Erro ao salvar turma no banco de dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            // Adicionar alunos à turma
+            List<Aluno> alunos = new ArrayList<>();
+            for (int i = 0; i < alunosListModel.size(); i++) {
+                alunos.add(alunosListModel.getElementAt(i));
             }
+            turmaAtual.setAlunos(alunos);
             
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
+            turmaController.salvarTurma(turmaAtual);
+            
+            // Mostrar o código gerado para o usuário
+            JOptionPane.showMessageDialog(this, 
+                "Turma salva com sucesso!\nCódigo gerado: " + turmaAtual.getCodigo(), 
+                "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            
+            clearFields();
+            
+            // Notificar o MainFrame que uma turma foi salva
+            mainFrame.notificarTurmaSalva();
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar turma: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     
+    // Método para gerar sigla a partir do nome do curso
+    private String gerarSiglaCurso(String nomeCurso) {
+        StringBuilder sigla = new StringBuilder();
+        String[] palavras = nomeCurso.split(" ");
+        
+        for (String palavra : palavras) {
+            if (!palavra.isEmpty() && !palavra.equalsIgnoreCase("de") && 
+                !palavra.equalsIgnoreCase("da") && !palavra.equalsIgnoreCase("do") && 
+                !palavra.equalsIgnoreCase("e")) {
+                sigla.append(palavra.toUpperCase().charAt(0));
+            }
+        }
+        
+        // Se a sigla for muito curta, adicionar mais caracteres
+        if (sigla.length() < 2) {
+            if (nomeCurso.length() > 1) {
+                sigla.append(nomeCurso.charAt(1));
+            }
+            if (nomeCurso.length() > 2) {
+                sigla.append(nomeCurso.charAt(2));
+            }
+        }
+        
+        return sigla.toString();
+    }
+    
     private void editarTurma() {
-        String codigo = JOptionPane.showInputDialog(this, "Digite o código da turma a ser editada:");
-        if (codigo != null && !codigo.isEmpty()) {
+        // Agora vamos buscar por nome em vez de código
+        String nome = JOptionPane.showInputDialog(this, "Digite o nome da turma a ser editada:");
+        if (nome != null && !nome.isEmpty()) {
             try {
-                List<Turma> turmas = turmaController.buscarTurmasPorCodigo(codigo);
-                if (turmas != null && !turmas.isEmpty()) {
-                    turmaAtual = turmas.get(0);
-                    preencherCampos(turmaAtual);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Turma não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
+                // Buscar todas as turmas e filtrar pelo nome
+                List<Turma> turmas = turmaController.buscarTodasTurmas();
+                List<Turma> turmasFiltradas = new ArrayList<>();
+                
+                for (Turma t : turmas) {
+                    if (t.getNome().toLowerCase().contains(nome.toLowerCase())) {
+                        turmasFiltradas.add(t);
+                    }
                 }
+                
+                if (turmasFiltradas.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nenhuma turma encontrada com esse nome!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                // Se encontrou mais de uma turma, mostrar uma lista para seleção
+                Turma turmaSelecionada;
+                if (turmasFiltradas.size() > 1) {
+                    Object[] options = turmasFiltradas.toArray();
+                    turmaSelecionada = (Turma) JOptionPane.showInputDialog(
+                        this,
+                        "Selecione a turma:",
+                        "Múltiplas turmas encontradas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]
+                    );
+                    
+                    if (turmaSelecionada == null) {
+                        return; // Usuário cancelou
+                    }
+                } else {
+                    turmaSelecionada = turmasFiltradas.get(0);
+                }
+                
+                turmaAtual = turmaSelecionada;
+                preencherCampos(turmaAtual);
+                
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Erro ao buscar turma: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -255,14 +352,13 @@ public class TurmaPanel extends BasePanel {
     }
     
     private void preencherCampos(Turma turma) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        
-        codigoField.setText(turma.getCodigo());
+        nomeField.setText(turma.getNome());
         periodoField.setText(turma.getPeriodo());
         capacidadeField.setText(String.valueOf(turma.getCapacidade()));
-        dataInicioField.setText(dateFormat.format(turma.getDataInicio()));
-        dataTerminoField.setText(dateFormat.format(turma.getDataTermino()));
+        dataInicioField.setText(turma.getDataInicio());
+        dataTerminoField.setText(turma.getDataTermino());
         
+        // Selecionar o curso
         if (turma.getCurso() != null) {
             for (int i = 0; i < cursoComboBox.getItemCount(); i++) {
                 Curso curso = cursoComboBox.getItemAt(i);
@@ -272,16 +368,32 @@ public class TurmaPanel extends BasePanel {
                 }
             }
         }
+        
+        // Adicionar alunos à lista
+        alunosListModel.clear();
+        if (turma.getAlunos() != null) {
+            for (Aluno aluno : turma.getAlunos()) {
+                alunosListModel.addElement(aluno);
+            }
+        }
     }
     
     @Override
     protected void clearFields() {
         turmaAtual = null;
-        codigoField.setText("");
+        nomeField.setText("");
         periodoField.setText("");
         capacidadeField.setText("");
         dataInicioField.setText("");
         dataTerminoField.setText("");
-        cursoComboBox.setSelectedIndex(-1);
+        if (cursoComboBox.getItemCount() > 0) {
+            cursoComboBox.setSelectedIndex(0);
+        }
+        alunosListModel.clear();
+    }
+    
+    // Método para atualizar a lista de cursos
+    public void atualizarListaCursos() {
+        carregarCursos();
     }
 }

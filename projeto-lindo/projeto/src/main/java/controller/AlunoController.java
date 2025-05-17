@@ -42,7 +42,7 @@ public class AlunoController {
     
     public Aluno buscarAlunoPorMatricula(String matricula) {
         try {
-            return alunoDAO.buscarPorId(Integer.parseInt(matricula));
+            return alunoDAO.buscarPorMatricula(matricula);
         } catch (Exception e) {
             System.err.println("Erro ao buscar aluno por matrícula: " + e.getMessage());
             return null;

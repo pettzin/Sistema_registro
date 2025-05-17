@@ -1,16 +1,15 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Turma {
-    private int id;
-    private String codigo; // Ex: 1A, 1B, 2A, 2B
-    private String periodo; // Manhã, Tarde ou Noite
+    private String codigo;
+    private String nome;
+    private String periodo;
     private int capacidade;
-    private Date dataInicio;
-    private Date dataTermino;
+    private String dataInicio;
+    private String dataTermino;
     private Curso curso;
     private List<Aluno> alunos;
 
@@ -18,32 +17,31 @@ public class Turma {
         this.alunos = new ArrayList<>();
     }
 
-    public Turma(int id, String codigo, String periodo, int capacidade, Date dataInicio, Date dataTermino, Curso curso) {
-        this.id = id;
+    public Turma(String codigo, String nome, String periodo, int capacidade, String dataInicio, String dataTermino) {
         this.codigo = codigo;
+        this.nome = nome;
         this.periodo = periodo;
         this.capacidade = capacidade;
         this.dataInicio = dataInicio;
         this.dataTermino = dataTermino;
-        this.curso = curso;
         this.alunos = new ArrayList<>();
     }
 
     // Getters e Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getCodigo() {
         return codigo;
     }
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getPeriodo() {
@@ -62,19 +60,19 @@ public class Turma {
         this.capacidade = capacidade;
     }
 
-    public Date getDataInicio() {
+    public String getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(Date dataInicio) {
+    public void setDataInicio(String dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public Date getDataTermino() {
+    public String getDataTermino() {
         return dataTermino;
     }
 
-    public void setDataTermino(Date dataTermino) {
+    public void setDataTermino(String dataTermino) {
         this.dataTermino = dataTermino;
     }
 
@@ -94,20 +92,15 @@ public class Turma {
         this.alunos = alunos;
     }
 
-    public boolean adicionarAluno(Aluno aluno) {
-        if (alunos.size() < capacidade) {
-            alunos.add(aluno);
-            return true;
+    public void adicionarAluno(Aluno aluno) {
+        if (this.alunos == null) {
+            this.alunos = new ArrayList<>();
         }
-        return false;
-    }
-
-    public boolean removerAluno(Aluno aluno) {
-        return alunos.remove(aluno);
+        this.alunos.add(aluno);
     }
 
     @Override
     public String toString() {
-        return codigo + " - " + periodo;
+        return codigo + " - " + nome;
     }
 }

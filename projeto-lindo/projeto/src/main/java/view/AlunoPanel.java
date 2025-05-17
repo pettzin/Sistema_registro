@@ -6,25 +6,24 @@ import model.Aluno;
 import model.Turma;
 import view.components.Button;
 import view.components.Input;
+import view.components.RoundedComboBox;
+import view.components.RoundedTextField;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AlunoPanel extends BasePanel {
     private AlunoController alunoController;
     private TurmaController turmaController;
     
-    private JTextField matriculaField; // Novo campo para matrícula
     private JTextField nomeField;
-    private JTextField dataNascimentoField;
     private JTextField cpfField;
-    private JTextField telefoneField;
+    private JComboBox<String> generoComboBox;
     private JTextField emailField;
-    private JComboBox<String> generoField;
+    private JTextField telefoneField;
     private JTextArea enderecoArea;
     private JComboBox<Turma> turmaComboBox;
     
@@ -45,48 +44,38 @@ public class AlunoPanel extends BasePanel {
     
     @Override
     protected void initializeComponents() {
-        // Matrícula (novo campo)
-        form.addLabel("Matrícula", 0, 0);
-        matriculaField = form.addTextField(1, 0, 2);
-        matriculaField.setEditable(false); // Matrícula é gerada automaticamente
-        
-        // Nome
-        form.addLabel("Nome", 0, 1);
-        nomeField = form.addTextField(1, 1, 2);
-        
-        // Data de Nascimento
-        form.addLabel("Data de Nascimento", 0, 2);
-        dataNascimentoField = form.addTextField(1, 2, 2);
-        dataNascimentoField.setToolTipText("Formato: dd/MM/yyyy");
+        // Nome (agora é o primeiro campo)
+        form.addLabel("Nome", 0, 0);
+        nomeField = form.addTextField(1, 0, 2);
         
         // CPF
-        form.addLabel("CPF", 0, 3);
-        cpfField = form.addTextField(1, 3, 2);
+        form.addLabel("CPF", 0, 1);
+        cpfField = form.addTextField(1, 1, 2);
+        
+        // Gênero
+        form.addLabel("Gênero", 0, 2);
+        generoComboBox = new RoundedComboBox<>();
+        generoComboBox.addItem("Masculino");
+        generoComboBox.addItem("Feminino");
+        generoComboBox.addItem("Outro");
+        form.addComponent(generoComboBox, 1, 2, 2);
+        
+        // Email
+        form.addLabel("Email", 0, 3);
+        emailField = form.addTextField(1, 3, 2);
         
         // Telefone
         form.addLabel("Telefone", 0, 4);
         telefoneField = form.addTextField(1, 4, 2);
         
-        // Email
-        form.addLabel("Email", 0, 5);
-        emailField = form.addTextField(1, 5, 2);
-        
-        // Gênero
-        form.addLabel("Gênero", 0, 6);
-        generoField = form.addComboBox(1, 6, 2);
-        String[] generos = {"Masculino", "Feminino", "Outro"};
-        for (String genero : generos) {
-            generoField.addItem(genero);
-        }
-        
         // Endereço
-        form.addLabel("Endereço", 0, 7);
-        enderecoArea = form.addTextArea(1, 7, 2);
+        form.addLabel("Endereço", 0, 5);
+        enderecoArea = form.addTextArea(1, 5, 2);
         
         // Turma
-        form.addLabel("Turma", 0, 8);
-        turmaComboBox = form.addComboBox(1, 8, 2);
-        atualizarTurmas();
+        form.addLabel("Turma", 0, 6);
+        turmaComboBox = new RoundedComboBox<>();
+        form.addComponent(turmaComboBox, 1, 6, 2);
         
         // Botões
         salvarButton = createSaveButton();
@@ -103,19 +92,20 @@ public class AlunoPanel extends BasePanel {
         painelBotoes.add(botoesPainel);
         
         // Aplicar validações de entrada
-        Input.aplicarMascaraData(dataNascimentoField);
         Input.aplicarMascaraCPF(cpfField);
         Input.aplicarMascaraTelefone(telefoneField);
-        Input.definirLimiteCaracteres(telefoneField, 15);
-        Input.adicionarFeedbackVisual(telefoneField, Input.TipoValidacao.REQUERIDO);
-        Input.definirLimiteCaracteres(nomeField, 50);
+        Input.definirLimiteCaracteres(nomeField, 100);
         Input.definirLimiteCaracteres(emailField, 100);
-        Input.definirLimiteCaracteres(enderecoArea, 200);
+        Input.definirLimiteCaracteres(enderecoArea, 100);
+        Input.apenasAlfabetico(nomeField);
         
-        Input.adicionarFeedbackVisual(nomeField, Input.TipoValidacao.REQUERIDO);
-        Input.adicionarFeedbackVisual(dataNascimentoField, Input.TipoValidacao.DATA);
-        Input.adicionarFeedbackVisual(cpfField, Input.TipoValidacao.CPF);
-        Input.adicionarFeedbackVisual(emailField, Input.TipoValidacao.EMAIL);
+        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
+        Input.adicionarValidacao(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!");
+        Input.adicionarValidacao(emailField, Input.TipoValidacao.EMAIL, "Email inválido!");
+        Input.adicionarValidacaoPersonalizada(enderecoArea, Input.TipoValidacao.REQUERIDO, "O endereço é obrigatório!");
+        
+        // Carregar turmas
+        carregarTurmas();
     }
     
     @Override
@@ -125,99 +115,63 @@ public class AlunoPanel extends BasePanel {
         excluirButton.addActionListener(e -> excluirAluno());
     }
     
-    public void atualizarListaTurmas() {
-        atualizarTurmas();
-    }
-    
-    private void atualizarTurmas() {
-        turmaComboBox.removeAllItems();
-        List<Turma> turmas = turmaController.buscarTodasTurmas();
-        for (Turma turma : turmas) {
-            turmaComboBox.addItem(turma);
+    private void carregarTurmas() {
+        try {
+            List<Turma> turmas = turmaController.buscarTodasTurmas();
+            turmaComboBox.removeAllItems();
+            
+            // Adicionar item vazio
+            turmaComboBox.addItem(null);
+            
+            for (Turma turma : turmas) {
+                turmaComboBox.addItem(turma);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar turmas: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     private void salvarAluno() {
         try {
             String nome = nomeField.getText().trim();
-            String dataNascimentoStr = dataNascimentoField.getText().trim();
-            String cpf = cpfField.getText().trim();
-            String telefone = telefoneField.getText().trim();
+            String cpf = cpfField.getText().trim().replaceAll("[^0-9]", "");
+            String genero = (String) generoComboBox.getSelectedItem();
             String email = emailField.getText().trim();
-            String genero = (String) generoField.getSelectedItem();
+            String telefone = telefoneField.getText().trim();
             String endereco = enderecoArea.getText().trim();
             
-            // Validação dos campos
-            if (!Input.validarCampo(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!")) {
+            if (nome.isEmpty() || cpf.isEmpty() || endereco.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nome, CPF e Endereço são campos obrigatórios!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
-            if (!Input.validarCampo(dataNascimentoField, Input.TipoValidacao.REQUERIDO, "A data de nascimento é obrigatória!") ||
-                !Input.validarCampo(dataNascimentoField, Input.TipoValidacao.DATA, "Formato de data inválido. Use dd/MM/yyyy")) {
-                return;
-            }
-            
-            if (!Input.validarCampo(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!")) {
-                return;
-            }
-
-            if (!Input.validarCampo(telefoneField, Input.TipoValidacao.REQUERIDO, "O telefone é obrigatório!")) {
-                return;
-            }
-            
-            if (!Input.validarCampo(emailField, Input.TipoValidacao.REQUERIDO, "O email é obrigatório!") ||
-                !Input.validarCampo(emailField, Input.TipoValidacao.EMAIL, "Formato de email inválido!")) {
-                return;
-            }
-            
-            if (generoField.getSelectedIndex() == -1) {
-                JOptionPane.showMessageDialog(this, "Selecione o gênero!", "Erro", JOptionPane.ERROR_MESSAGE);
-                generoField.requestFocus();
-                return;
-            }
-            
-            if (endereco.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "O endereço é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
-                enderecoArea.requestFocus();
-                return;
-            }
-            
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            Date dataNascimento = dateFormat.parse(dataNascimentoStr);
-            
-            Turma turma = (Turma) turmaComboBox.getSelectedItem();
             
             if (alunoAtual == null) {
                 alunoAtual = new Aluno();
+                // Gerar matrícula automaticamente (ano atual + 5 dígitos aleatórios)
+                String ano = String.valueOf(java.time.Year.now().getValue());
+                String random = String.format("%05d", (int)(Math.random() * 100000));
+                alunoAtual.setMatricula(ano + random);
             }
             
             alunoAtual.setNome(nome);
-            alunoAtual.setDataNascimento(dataNascimento);
             alunoAtual.setCpf(cpf);
-            alunoAtual.setTelefone(telefone);
-            alunoAtual.setEmail(email);
             alunoAtual.setGenero(genero);
+            alunoAtual.setEmail(email);
+            alunoAtual.setTelefone(telefone);
             alunoAtual.setEndereco(endereco);
-            alunoAtual.setTurma(turma);
             
-            try {
-                alunoController.salvarAluno(alunoAtual);
-                
-                if (turma != null) {
-                    alunoController.matricularAlunoEmTurma(alunoAtual, turma);
-                }
-                
-                // Atualiza o campo de matrícula após salvar
-                matriculaField.setText(alunoAtual.getMatricula());
-                
-                clearFields();
-                JOptionPane.showMessageDialog(this, "Aluno salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao salvar aluno: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+            Turma turmaSelecionada = (Turma) turmaComboBox.getSelectedItem();
+            alunoAtual.setTurma(turmaSelecionada);
             
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar aluno: Formato de data inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            alunoController.salvarAluno(alunoAtual);
+            
+            // Mostrar a matrícula gerada para o usuário
+            JOptionPane.showMessageDialog(this, 
+                "Aluno salvo com sucesso!\nMatrícula gerada: " + alunoAtual.getMatricula(), 
+                "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            
+            clearFields();
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
@@ -227,6 +181,8 @@ public class AlunoPanel extends BasePanel {
         String cpf = JOptionPane.showInputDialog(this, "Digite o CPF do aluno a ser editado:");
         if (cpf != null && !cpf.isEmpty()) {
             try {
+                // Remover formatação do CPF
+                cpf = cpf.replaceAll("[^0-9]", "");
                 Aluno aluno = alunoController.buscarAlunoPorCpf(cpf);
                 if (aluno != null) {
                     alunoAtual = aluno;
@@ -258,39 +214,50 @@ public class AlunoPanel extends BasePanel {
     }
     
     private void preencherCampos(Aluno aluno) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        
-        matriculaField.setText(aluno.getMatricula()); // Novo campo
         nomeField.setText(aluno.getNome());
-        dataNascimentoField.setText(aluno.getDataNascimento() != null ? dateFormat.format(aluno.getDataNascimento()) : "");
         cpfField.setText(aluno.getCpf());
+        
+        if (aluno.getGenero() != null) {
+            for (int i = 0; i < generoComboBox.getItemCount(); i++) {
+                if (generoComboBox.getItemAt(i).equals(aluno.getGenero())) {
+                    generoComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
         emailField.setText(aluno.getEmail());
         telefoneField.setText(aluno.getTelefone());
-        generoField.setSelectedItem(aluno.getGenero());
         enderecoArea.setText(aluno.getEndereco());
         
+        // Selecionar a turma
         if (aluno.getTurma() != null) {
             for (int i = 0; i < turmaComboBox.getItemCount(); i++) {
                 Turma turma = turmaComboBox.getItemAt(i);
-                if (turma.getId() == aluno.getTurma().getId()) {
+                if (turma != null && turma.getCodigo().equals(aluno.getTurma().getCodigo())) {
                     turmaComboBox.setSelectedIndex(i);
                     break;
                 }
             }
+        } else {
+            turmaComboBox.setSelectedIndex(0);
         }
     }
     
     @Override
     protected void clearFields() {
         alunoAtual = null;
-        matriculaField.setText(""); // Novo campo
         nomeField.setText("");
-        dataNascimentoField.setText("");
         cpfField.setText("");
+        generoComboBox.setSelectedIndex(0);
         emailField.setText("");
         telefoneField.setText("");
-        generoField.setSelectedIndex(-1);
         enderecoArea.setText("");
-        turmaComboBox.setSelectedIndex(-1);
+        turmaComboBox.setSelectedIndex(0);
+    }
+    
+    // Método adicionado para resolver o erro
+    public void atualizarListaTurmas() {
+        carregarTurmas();
     }
 }

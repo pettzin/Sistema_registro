@@ -1,46 +1,29 @@
 package model;
 
-import java.util.Date;
-
 public class Aluno {
-    private int id;
-    private String matricula; // Adicionado para representar a chave primária no banco
+    private String matricula;
     private String nome;
-    private Date dataNascimento;
     private String cpf;
-    private String telefone;
-    private String email;
     private String genero;
+    private String email;
+    private String telefone;
     private String endereco;
     private Turma turma;
 
     public Aluno() {
-        this.matricula = "";
     }
 
-    public Aluno(int id, String nome, Date dataNascimento, String cpf, String telefone, String email, String genero, String endereco, Turma turma) {
-        this.id = id;
-        this.matricula = String.valueOf(id); // Inicializa matricula com o id
+    public Aluno(String matricula, String nome, String cpf, String genero, String email, String telefone, String endereco) {
+        this.matricula = matricula;
         this.nome = nome;
-        this.dataNascimento = dataNascimento;
         this.cpf = cpf;
-        this.telefone = telefone;
-        this.email = email;
         this.genero = genero;
+        this.email = email;
+        this.telefone = telefone;
         this.endereco = endereco;
-        this.turma = turma;
     }
 
-    // Getters e Setters originais
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    
-    // Novos getters e setters para matricula
+    // Getters e Setters
     public String getMatricula() {
         return matricula;
     }
@@ -57,14 +40,6 @@ public class Aluno {
         this.nome = nome;
     }
 
-    public Date getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(Date dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
     public String getCpf() {
         return cpf;
     }
@@ -72,13 +47,13 @@ public class Aluno {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
-    
-    public String getTelefone() {
-        return telefone;
+
+    public String getGenero() {
+        return genero;
     }
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     public String getEmail() {
@@ -89,12 +64,12 @@ public class Aluno {
         this.email = email;
     }
 
-    public String getGenero() {
-        return genero;
+    public String getTelefone() {
+        return telefone;
     }
 
-    public void setGenero(String genero) {
-        this.genero = genero;
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
     public String getEndereco() {
@@ -115,6 +90,6 @@ public class Aluno {
 
     @Override
     public String toString() {
-        return nome + (matricula != null && !matricula.isEmpty() ? " (Matrícula: " + matricula + ")" : "");
+        return nome;
     }
 }
