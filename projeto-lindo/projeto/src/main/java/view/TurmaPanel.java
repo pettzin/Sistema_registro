@@ -47,83 +47,120 @@ public class TurmaPanel extends BasePanel {
     }
     
     @Override
-    protected void initializeComponents() {
-        // Nome (agora é o primeiro campo)
-        form.addLabel("Nome", 0, 0);
-        nomeField = form.addTextField(1, 0, 2);
+protected void initializeComponents() {
+    // Nome (agora é o primeiro campo)
+    form.addLabel("Nome", 0, 0);
+    nomeField = form.addTextField(1, 0, 2);
+    configurarCampoTexto(nomeField);
+    
+    // Período
+    form.addLabel("Período", 0, 1);
+    periodoField = form.addTextField(1, 1, 2);
+    configurarCampoTexto(periodoField);
+    
+    // Capacidade
+    form.addLabel("Capacidade", 0, 2);
+    capacidadeField = form.addTextField(1, 2, 2);
+    configurarCampoTexto(capacidadeField);
+    
+    // Data de Início
+    form.addLabel("Data de Início", 0, 3);
+    dataInicioField = form.addTextField(1, 3, 2);
+    configurarCampoTexto(dataInicioField);
+    dataInicioField.setToolTipText("Formato: dd/MM/yyyy");
+    
+    // Data de Término
+    form.addLabel("Data de Término", 0, 4);
+    dataTerminoField = form.addTextField(1, 4, 2);
+    configurarCampoTexto(dataTerminoField);
+    dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
+    
+    // Curso
+    form.addLabel("Curso", 0, 5);
+    cursoComboBox = new RoundedComboBox<>();
+    configurarComboBox(cursoComboBox);
+    form.addComponent(cursoComboBox, 1, 5, 2);
+    
+    // Alunos
+    form.addLabel("Alunos", 0, 6);
+    alunosListModel = new DefaultListModel<>();
+    alunosList = new JList<>(alunosListModel);
+    alunosList.setFont(new Font("Arial", Font.PLAIN, 16)); // Aumentar fonte da lista
+    JScrollPane alunosScrollPane = new JScrollPane(alunosList);
+    alunosScrollPane.setPreferredSize(new Dimension(450, 200)); // Aumentar tamanho da lista
+    form.addComponent(alunosScrollPane, 1, 6, 2);
+    
+    // Botão para adicionar alunos
+    Button adicionarAlunoButton = Button.createActionButton("Adicionar Aluno", new Color(51, 51, 51));
+    adicionarAlunoButton.setPreferredSize(new Dimension(150, 45));
+    adicionarAlunoButton.setFont(new Font("Arial", Font.BOLD, 14));
+    form.addComponent(adicionarAlunoButton, 1, 7, 1);
+    
+    // Botão para remover alunos
+    Button removerAlunoButton = Button.createActionButton("Remover Aluno", new Color(51, 51, 51));
+    removerAlunoButton.setPreferredSize(new Dimension(150, 45));
+    removerAlunoButton.setFont(new Font("Arial", Font.BOLD, 14));
+    form.addComponent(removerAlunoButton, 2, 7, 1);
+    
+    // Botões
+    salvarButton = createSaveButton();
+    editarButton = createEditButton();
+    excluirButton = createDeleteButton();
+    
+    // Configurar o painel de botões para ficar no canto direito
+    setupButtonPanel(salvarButton, editarButton, excluirButton);
+    
+    // Aplicar validações de entrada
+    Input.aplicarMascaraData(dataInicioField);
+    Input.aplicarMascaraData(dataTerminoField);
+    Input.apenasNumeros(capacidadeField);
+    Input.definirLimiteCaracteres(nomeField, 100);
+    Input.definirLimiteCaracteres(periodoField, 20);
+    
+    Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
+    Input.adicionarValidacao(periodoField, Input.TipoValidacao.REQUERIDO, "O período é obrigatório!");
+    Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.REQUERIDO, "A capacidade é obrigatória!");
+    Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.DATA, "A data de início é obrigatória!");
+    Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "A data de término é obrigatória!");
+    
+    // Carregar cursos
+    carregarCursos();
+    
+    // Configurar listeners para os botões de adicionar e remover alunos
+    adicionarAlunoButton.addActionListener(e -> adicionarAluno());
+    removerAlunoButton.addActionListener(e -> removerAluno());
+}
+    
+    // Método para configurar campos de texto com tamanho e fonte maiores
+    protected void configurarCampoTexto(JTextField campo) {
+        campo.setFont(new Font("Arial", Font.PLAIN, 16)); // Aumentar tamanho da fonte
+        campo.setPreferredSize(new Dimension(450, 45)); // Aumentar tamanho do campo
         
-        // Período
-        form.addLabel("Período", 0, 1);
-        periodoField = form.addTextField(1, 1, 2);
+        // Forçar o tamanho mínimo também
+        campo.setMinimumSize(new Dimension(450, 45));
+    }
+    
+    // Método para configurar combobox com tamanho e fonte maiores
+    protected void configurarComboBox(JComboBox<?> comboBox) {
+        comboBox.setFont(new Font("Arial", Font.PLAIN, 16)); // Aumentar tamanho da fonte
+        comboBox.setPreferredSize(new Dimension(450, 45)); // Aumentar tamanho do combobox
+        comboBox.setMinimumSize(new Dimension(450, 45)); // Forçar tamanho mínimo
         
-        // Capacidade
-        form.addLabel("Capacidade", 0, 2);
-        capacidadeField = form.addTextField(1, 2, 2);
-        
-        // Data de Início
-        form.addLabel("Data de Início", 0, 3);
-        dataInicioField = form.addTextField(1, 3, 2);
-        dataInicioField.setToolTipText("Formato: dd/MM/yyyy");
-        
-        // Data de Término
-        form.addLabel("Data de Término", 0, 4);
-        dataTerminoField = form.addTextField(1, 4, 2);
-        dataTerminoField.setToolTipText("Formato: dd/MM/yyyy");
-        
-        // Curso
-        form.addLabel("Curso", 0, 5);
-        cursoComboBox = new RoundedComboBox<>();
-        form.addComponent(cursoComboBox, 1, 5, 2);
-        
-        // Alunos
-        form.addLabel("Alunos", 0, 6);
-        alunosListModel = new DefaultListModel<>();
-        alunosList = new JList<>(alunosListModel);
-        JScrollPane alunosScrollPane = new JScrollPane(alunosList);
-        alunosScrollPane.setPreferredSize(new Dimension(300, 150));
-        form.addComponent(alunosScrollPane, 1, 6, 2);
-        
-        // Botão para adicionar alunos
-        Button adicionarAlunoButton = Button.createActionButton("Adicionar Aluno", new Color(51, 51, 51));
-        form.addComponent(adicionarAlunoButton, 1, 7, 1);
-        
-        // Botão para remover alunos
-        Button removerAlunoButton = Button.createActionButton("Remover Aluno", new Color(51, 51, 51));
-        form.addComponent(removerAlunoButton, 2, 7, 1);
-        
-        // Botões
-        salvarButton = createSaveButton();
-        editarButton = createEditButton();
-        excluirButton = createDeleteButton();
-        
-        // Configurar o painel de botões
-        JPanel botoesPainel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        botoesPainel.setBackground(new Color(220, 220, 220));
-        botoesPainel.add(salvarButton);
-        botoesPainel.add(editarButton);
-        botoesPainel.add(excluirButton);
-        
-        painelBotoes.add(botoesPainel);
-        
-        // Aplicar validações de entrada
-        Input.aplicarMascaraData(dataInicioField);
-        Input.aplicarMascaraData(dataTerminoField);
-        Input.apenasNumeros(capacidadeField);
-        Input.definirLimiteCaracteres(nomeField, 100);
-        Input.definirLimiteCaracteres(periodoField, 20);
-        
-        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
-        Input.adicionarValidacao(periodoField, Input.TipoValidacao.REQUERIDO, "O período é obrigatório!");
-        Input.adicionarValidacao(capacidadeField, Input.TipoValidacao.REQUERIDO, "A capacidade é obrigatória!");
-        Input.adicionarValidacao(dataInicioField, Input.TipoValidacao.DATA, "A data de início é obrigatória!");
-        Input.adicionarValidacao(dataTerminoField, Input.TipoValidacao.DATA, "A data de término é obrigatória!");
-        
-        // Carregar cursos
-        carregarCursos();
-        
-        // Configurar listeners para os botões de adicionar e remover alunos
-        adicionarAlunoButton.addActionListener(e -> adicionarAluno());
-        removerAlunoButton.addActionListener(e -> removerAluno());
+        // Configurar o renderer para usar fonte maior
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                c.setFont(new Font("Arial", Font.PLAIN, 16));
+                return c;
+            }
+        });
+    }
+    
+    // Método para configurar botões com tamanho maior
+    private void configurarBotao(Button botao) {
+        botao.setFont(new Font("Arial", Font.BOLD, 14)); // Aumentar fonte do botão
+        botao.setPreferredSize(new Dimension(150, 45)); // Aumentar tamanho do botão
     }
     
     @Override

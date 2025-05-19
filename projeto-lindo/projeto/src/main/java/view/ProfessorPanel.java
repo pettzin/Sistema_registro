@@ -32,54 +32,52 @@ public class ProfessorPanel extends BasePanel {
     }
     
     @Override
-    protected void initializeComponents() {
-        // Nome
-        form.addLabel("Nome", 0, 0);
-        nomeField = form.addTextField(1, 0, 2);
-        
-        // CPF
-        form.addLabel("CPF", 0, 1);
-        cpfField = form.addTextField(1, 1, 2);
-        
-        // Email
-        form.addLabel("Email", 0, 2);
-        emailField = form.addTextField(1, 2, 2);
-        
-        // Telefone
-        form.addLabel("Telefone", 0, 3);
-        telefoneField = form.addTextField(1, 3, 2);
-        
-        // Endereço
-        form.addLabel("Endereço", 0, 4);
-        enderecoArea = form.addTextArea(1, 4, 2);
-        
-        // Botões
-        salvarButton = createSaveButton();
-        editarButton = createEditButton();
-        excluirButton = createDeleteButton();
-        
-        // Configurar o painel de botões
-        JPanel botoesPainel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        botoesPainel.setBackground(new Color(220, 220, 220));
-        botoesPainel.add(salvarButton);
-        botoesPainel.add(editarButton);
-        botoesPainel.add(excluirButton);
-        
-        painelBotoes.add(botoesPainel);
-        
-        // Aplicar validações de entrada
-        Input.aplicarMascaraCPF(cpfField);
-        Input.aplicarMascaraTelefone(telefoneField);
-        Input.definirLimiteCaracteres(nomeField, 100);
-        Input.definirLimiteCaracteres(emailField, 100);
-        Input.definirLimiteCaracteres(enderecoArea, 100);
-        Input.apenasAlfabetico(nomeField);
-        
-        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
-        Input.adicionarValidacao(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!");
-        Input.adicionarValidacao(emailField, Input.TipoValidacao.EMAIL, "Email inválido!");
-        Input.adicionarValidacaoPersonalizada(enderecoArea, Input.TipoValidacao.REQUERIDO, "O endereço é obrigatório!");
-    }
+protected void initializeComponents() {
+    // Nome
+    form.addLabel("Nome", 0, 0);
+    nomeField = form.addTextField(1, 0, 2);
+    configurarCampoTexto(nomeField);
+    
+    // CPF
+    form.addLabel("CPF", 0, 1);
+    cpfField = form.addTextField(1, 1, 2);
+    configurarCampoTexto(cpfField);
+    
+    // Email
+    form.addLabel("Email", 0, 2);
+    emailField = form.addTextField(1, 2, 2);
+    configurarCampoTexto(emailField);
+    
+    // Telefone
+    form.addLabel("Telefone", 0, 3);
+    telefoneField = form.addTextField(1, 3, 2);
+    configurarCampoTexto(telefoneField);
+    
+    // Endereço
+    form.addLabel("Endereço", 0, 4);
+    enderecoArea = form.addTextArea(1, 4, 2);
+    
+    // Botões
+    salvarButton = createSaveButton();
+    editarButton = createEditButton();
+    excluirButton = createDeleteButton();
+    
+    // Usar o método setupButtonPanel para posicionar os botões no canto direito
+    setupButtonPanel(salvarButton, editarButton, excluirButton);
+    
+    // Aplicar validações de entrada
+    Input.aplicarMascaraCPF(cpfField);
+    Input.aplicarMascaraTelefone(telefoneField);
+    Input.definirLimiteCaracteres(nomeField, 100);
+    Input.definirLimiteCaracteres(emailField, 100);
+    Input.definirLimiteCaracteres(enderecoArea, 100);
+    Input.apenasAlfabetico(nomeField);
+    
+    Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome é obrigatório!");
+    Input.adicionarValidacao(cpfField, Input.TipoValidacao.REQUERIDO, "O CPF é obrigatório!");
+    Input.adicionarValidacao(emailField, Input.TipoValidacao.EMAIL, "Email inválido!");
+    Input.adicionarValidacaoPersonalizada(enderecoArea, Input.TipoValidacao.REQUERIDO, "O endereço é obrigatório!");
+}
     
     @Override
     protected void setupListeners() {

@@ -1,5 +1,3 @@
-// Form.java modifications
-
 package view.components;
 
 import javax.swing.*;
@@ -59,7 +57,9 @@ public class Form extends JPanel {
         RoundedTextField campoTexto = new RoundedTextField(20);
         
         // Definir um tamanho preferido maior para todos os campos
-        campoTexto.setPreferredSize(new Dimension(350, 40)); // Aumentado de 300x30 para 350x40
+        campoTexto.setPreferredSize(new Dimension(450, 45)); // Aumentado para 450x45
+        campoTexto.setMinimumSize(new Dimension(450, 45)); // Forçar tamanho mínimo
+        campoTexto.setFont(new Font("Arial", Font.PLAIN, 16)); // Fonte maior
         
         addComponent(campoTexto, gridx, gridy, gridwidth);
         return campoTexto;
@@ -69,7 +69,19 @@ public class Form extends JPanel {
         RoundedComboBox<E> comboBox = new RoundedComboBox<>();
         
         // Definir o mesmo tamanho preferido maior para os comboboxes
-        comboBox.setPreferredSize(new Dimension(350, 40)); // Aumentado de 300x30 para 350x40
+        comboBox.setPreferredSize(new Dimension(450, 45)); // Aumentado para 450x45
+        comboBox.setMinimumSize(new Dimension(450, 45)); // Forçar tamanho mínimo
+        comboBox.setFont(new Font("Arial", Font.PLAIN, 16)); // Fonte maior
+        
+        // Configurar o renderer para usar fonte maior
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                c.setFont(new Font("Arial", Font.PLAIN, 16));
+                return c;
+            }
+        });
         
         addComponent(comboBox, gridx, gridy, gridwidth);
         return comboBox;
@@ -78,6 +90,7 @@ public class Form extends JPanel {
     public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
         JTextArea areaTexto = new JTextArea(5, 20);
         areaTexto.setLineWrap(true);
+        areaTexto.setFont(new Font("Arial", Font.PLAIN, 16)); // Fonte maior
         
         // Criar um painel com borda arredondada para o JTextArea
         JPanel panelTexto = new JPanel(new BorderLayout());
@@ -92,27 +105,33 @@ public class Form extends JPanel {
         panelTexto.add(scrollPane, BorderLayout.CENTER);
         
         // Definir um tamanho preferido maior para o painel do textarea
-        panelTexto.setPreferredSize(new Dimension(350, 120)); // Aumentado de 300x100 para 350x120
+        panelTexto.setPreferredSize(new Dimension(450, 120)); // Aumentado para 450x120
+        panelTexto.setMinimumSize(new Dimension(450, 120)); // Forçar tamanho mínimo
         
         addComponent(panelTexto, gridx, gridy, gridwidth);
         return areaTexto;
     }
     
     public JPanel createButtonPanel(JButton... botoes) {
-        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        // Usar FlowLayout com alinhamento à direita
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         painelBotoes.setBackground(corFundo);
         
         for (JButton botao : botoes) {
             painelBotoes.add(botao);
         }
         
-        // Para garantir que os botões fiquem no canto inferior direito
-        // Adicione este painel usando constraints específicas no seu layout principal
-        // Por exemplo: addComponent(painelBotoes, 0, ultimaLinha, 2);
-        // onde ultimaLinha é a última linha do seu formulário
-        
         return painelBotoes;
     }
+    
+    // Método para criar um campo de pesquisa com largura maior
+    public JTextField createSearchField() {
+    RoundedTextField campoTexto = new RoundedTextField(20);
+    campoTexto.setPreferredSize(new Dimension(900, 40)); // Campo de pesquisa mais largo
+    campoTexto.setMinimumSize(new Dimension(300, 40)); // Forçar tamanho mínimo
+    campoTexto.setFont(new Font("Arial", Font.PLAIN, 16)); // Fonte maior
+    return campoTexto;
+}
     
     // Classe interna para criar uma borda arredondada
     private static class RoundedBorder extends AbstractBorder {

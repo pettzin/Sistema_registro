@@ -49,25 +49,56 @@ public class PesquisaPanel extends BasePanel {
 
     @Override
     protected void initializeComponents() {
-        // Criar um painel de pesquisa
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // Usar BorderLayout para o painel principal
+        setLayout(new BorderLayout());
+        
+        // Criar um painel de pesquisa no topo
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BorderLayout());
         searchPanel.setBackground(new Color(220, 220, 220));
-
-        // Campo de pesquisa
+        searchPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        // Painel para os componentes de pesquisa com GridBagLayout para responsividade
+        JPanel componentsPanel = new JPanel(new GridBagLayout());
+        componentsPanel.setBackground(new Color(220, 220, 220));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 5, 0, 5);
+        
+        // Campo de pesquisa - ocupa a maior parte do espaço
         pesquisaField = new RoundedTextField(20);
+        pesquisaField.setFont(new Font("Arial", Font.PLAIN, 16));
+        pesquisaField.setPreferredSize(new Dimension(600, 45));
         
         // Combo box de tipo
         tipoComboBox = new JComboBox<>(new String[]{"Aluno", "Turma", "Curso", "Professor"});
         tipoComboBox.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
-        tipoComboBox.setPreferredSize(new Dimension(tipoComboBox.getPreferredSize().width, 35));
+        tipoComboBox.setPreferredSize(new Dimension(200, 45));
+        tipoComboBox.setFont(new Font("Arial", Font.PLAIN, 16));
         
         // Botão de pesquisa
         pesquisarButton = Button.createActionButton("Pesquisar", new Color(51, 51, 51));
+        pesquisarButton.setPreferredSize(new Dimension(150, 45));
+        pesquisarButton.setFont(new Font("Arial", Font.BOLD, 14));
         
-        searchPanel.add(pesquisaField);
-        searchPanel.add(tipoComboBox);
-        searchPanel.add(pesquisarButton);
-
+        // Adicionar componentes com GridBagConstraints para responsividade
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.7; // Campo de pesquisa ocupa 70% do espaço horizontal
+        componentsPanel.add(pesquisaField, gbc);
+        
+        gbc.gridx = 1;
+        gbc.weightx = 0.15; // ComboBox ocupa 15% do espaço
+        componentsPanel.add(tipoComboBox, gbc);
+        
+        gbc.gridx = 2;
+        gbc.weightx = 0.15; // Botão ocupa 15% do espaço
+        componentsPanel.add(pesquisarButton, gbc);
+        
+        // Adicionar o painel de componentes ao painel de pesquisa
+        searchPanel.add(componentsPanel, BorderLayout.NORTH);
+        
         // Área de resultado
         JPanel resultPanel = new JPanel(new BorderLayout());
         resultPanel.setBackground(new Color(220, 220, 220));
@@ -79,18 +110,28 @@ public class PesquisaPanel extends BasePanel {
         resultadoArea.setWrapStyleWord(true);
         resultadoArea.setBackground(Color.WHITE);
         resultadoArea.setForeground(Color.BLACK);
+        resultadoArea.setFont(new Font("Arial", Font.PLAIN, 16));
 
         JScrollPane scrollPane = new JScrollPane(resultadoArea);
         scrollPane.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
         
         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Adicionar componentes ao painel
-        add(searchPanel, BorderLayout.CENTER);
-        add(resultPanel, BorderLayout.SOUTH);
+        // Adicionar componentes ao painel principal
+        add(searchPanel, BorderLayout.NORTH);
+        add(resultPanel, BorderLayout.CENTER);
 
         // Adicionar validação
         adicionarValidacao(pesquisaField, TipoValidacao.REQUERIDO, "Digite um termo para pesquisar!");
+        
+        // Adicionar um ComponentListener para ajustar o tamanho do campo de pesquisa quando o painel for redimensionado
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                // Recalcular o layout quando o painel for redimensionado
+                componentsPanel.revalidate();
+                componentsPanel.repaint();
+            }
+        });
     }
 
     @Override

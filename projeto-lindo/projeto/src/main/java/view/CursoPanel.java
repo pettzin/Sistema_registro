@@ -35,40 +35,36 @@ public class CursoPanel extends BasePanel {
     }
     
     @Override
-    protected void initializeComponents() {
-        // Nome
-        form.addLabel("Nome", 0, 0);
-        nomeField = form.addTextField(1, 0, 2);
-        
-        // Professor
-        form.addLabel("Professor", 0, 1);
-        professorComboBox = form.addComboBox(1, 1, 2);
-        atualizarProfessores();
-        
-        // Descrição
-        form.addLabel("Descrição", 0, 2);
-        descricaoArea = form.addTextArea(1, 2, 2);
-        
-        // Botões
-        salvarButton = createSaveButton();
-        editarButton = createEditButton();
-        excluirButton = createDeleteButton();
-        
-        // Configurar o painel de botões
-        JPanel botoesPainel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        botoesPainel.setBackground(new Color(220, 220, 220));
-        botoesPainel.add(salvarButton);
-        botoesPainel.add(editarButton);
-        botoesPainel.add(excluirButton);
-        
-        painelBotoes.add(botoesPainel);
-        
-        // Aplicar validações de entrada
-        Input.definirLimiteCaracteres(nomeField, 50);
-        Input.definirLimiteCaracteres(descricaoArea, 500);
-        
-        Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome do curso é obrigatório!");
-        Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
+protected void initializeComponents() {
+    // Nome
+    form.addLabel("Nome", 0, 0);
+    nomeField = form.addTextField(1, 0, 2);
+    configurarCampoTexto(nomeField);
+    
+    // Professor
+    form.addLabel("Professor", 0, 1);
+    professorComboBox = form.addComboBox(1, 1, 2);
+    configurarComboBox(professorComboBox);
+    atualizarProfessores();
+    
+    // Descrição
+    form.addLabel("Descrição", 0, 2);
+    descricaoArea = form.addTextArea(1, 2, 2);
+    
+    // Botões
+    salvarButton = createSaveButton();
+    editarButton = createEditButton();
+    excluirButton = createDeleteButton();
+    
+    // Usar o método setupButtonPanel para posicionar os botões no canto direito
+    setupButtonPanel(salvarButton, editarButton, excluirButton);
+    
+    // Aplicar validações de entrada
+    Input.definirLimiteCaracteres(nomeField, 50);
+    Input.definirLimiteCaracteres(descricaoArea, 500);
+    
+    Input.adicionarValidacao(nomeField, Input.TipoValidacao.REQUERIDO, "O nome do curso é obrigatório!");
+    Input.adicionarValidacaoPersonalizada(descricaoArea, Input.TipoValidacao.REQUERIDO, "A descrição do curso é obrigatória!");
     }
     
     @Override
