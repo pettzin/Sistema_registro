@@ -49,14 +49,10 @@ public class PesquisaPanel extends BasePanel {
 
     @Override
     protected void initializeComponents() {
-        // Usar BorderLayout para o painel principal
-        setLayout(new BorderLayout());
         
-        // Criar um painel de pesquisa no topo
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new BorderLayout());
+        
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         searchPanel.setBackground(new Color(220, 220, 220));
-        searchPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Painel para os componentes de pesquisa com GridBagLayout para responsividade
         JPanel componentsPanel = new JPanel(new GridBagLayout());
@@ -66,10 +62,9 @@ public class PesquisaPanel extends BasePanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 5, 0, 5);
         
-        // Campo de pesquisa - ocupa a maior parte do espaço
+       
         pesquisaField = new RoundedTextField(20);
-        pesquisaField.setFont(new Font("Arial", Font.PLAIN, 16));
-        pesquisaField.setPreferredSize(new Dimension(600, 45));
+      
         
         // Combo box de tipo
         tipoComboBox = new JComboBox<>(new String[]{"Aluno", "Turma", "Curso", "Professor"});
@@ -79,38 +74,21 @@ public class PesquisaPanel extends BasePanel {
         
         // Botão de pesquisa
         pesquisarButton = Button.createActionButton("Pesquisar", new Color(51, 51, 51));
-        pesquisarButton.setPreferredSize(new Dimension(150, 45));
-        pesquisarButton.setFont(new Font("Arial", Font.BOLD, 14));
-        
-        // Adicionar componentes com GridBagConstraints para responsividade
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.7; // Campo de pesquisa ocupa 70% do espaço horizontal
-        componentsPanel.add(pesquisaField, gbc);
-        
-        gbc.gridx = 1;
-        gbc.weightx = 0.15; // ComboBox ocupa 15% do espaço
-        componentsPanel.add(tipoComboBox, gbc);
-        
-        gbc.gridx = 2;
-        gbc.weightx = 0.15; // Botão ocupa 15% do espaço
-        componentsPanel.add(pesquisarButton, gbc);
-        
-        // Adicionar o painel de componentes ao painel de pesquisa
-        searchPanel.add(componentsPanel, BorderLayout.NORTH);
+        searchPanel.add(pesquisaField);
+        searchPanel.add(tipoComboBox);
+        searchPanel.add(pesquisarButton);
         
         // Área de resultado
         JPanel resultPanel = new JPanel(new BorderLayout());
         resultPanel.setBackground(new Color(220, 220, 220));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        resultadoArea = new JTextArea(15, 40);
+        resultadoArea = new JTextArea(25, 40);
         resultadoArea.setEditable(false);
         resultadoArea.setLineWrap(true);
         resultadoArea.setWrapStyleWord(true);
         resultadoArea.setBackground(Color.WHITE);
         resultadoArea.setForeground(Color.BLACK);
-        resultadoArea.setFont(new Font("Arial", Font.PLAIN, 16));
 
         JScrollPane scrollPane = new JScrollPane(resultadoArea);
         scrollPane.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
@@ -118,20 +96,12 @@ public class PesquisaPanel extends BasePanel {
         resultPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Adicionar componentes ao painel principal
-        add(searchPanel, BorderLayout.NORTH);
-        add(resultPanel, BorderLayout.CENTER);
+        add(searchPanel, BorderLayout.CENTER);
+        add(resultPanel, BorderLayout.SOUTH);
 
         // Adicionar validação
         adicionarValidacao(pesquisaField, TipoValidacao.REQUERIDO, "Digite um termo para pesquisar!");
         
-        // Adicionar um ComponentListener para ajustar o tamanho do campo de pesquisa quando o painel for redimensionado
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                // Recalcular o layout quando o painel for redimensionado
-                componentsPanel.revalidate();
-                componentsPanel.repaint();
-            }
-        });
     }
 
     @Override
