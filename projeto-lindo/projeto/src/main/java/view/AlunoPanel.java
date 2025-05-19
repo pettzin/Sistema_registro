@@ -7,13 +7,8 @@ import model.Turma;
 import view.components.Button;
 import view.components.Input;
 import view.components.RoundedComboBox;
-import view.components.RoundedTextField;
-
 import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class AlunoPanel extends BasePanel {
     private AlunoController alunoController;

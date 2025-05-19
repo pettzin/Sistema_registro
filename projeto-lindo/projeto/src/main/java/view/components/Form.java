@@ -9,7 +9,6 @@ public class Form extends JPanel {
     
     private GridBagConstraints gbc;
     private Color corFundo = new Color(220, 220, 220); // Cor de fundo cinza claro
-    private Color corLabel = Color.BLACK; // Cor do label já é preta
     
     public Form() {
         setLayout(new GridBagLayout());
@@ -19,13 +18,6 @@ public class Form extends JPanel {
         gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
-    }
-    
-    public Form(Color corFundo, Color corLabel) {
-        this();
-        this.corFundo = corFundo;
-        this.corLabel = corLabel;
-        setBackground(corFundo);
     }
     
     public JLabel addLabel(String texto, int gridx, int gridy) {

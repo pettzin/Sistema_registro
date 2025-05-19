@@ -12,7 +12,6 @@ public class Button extends JButton {
     private Color corPadrao = new Color(50, 50, 50); // Cinza mais escuro
     private Color corBorda = new Color(100, 100, 100);
     private Color corBordaHover = new Color(0, 200, 255);  // Azul mais vívido
-    private Color corSelecionado = new Color(50, 50, 50);
     private Color corTexto = Color.WHITE;
     private boolean estaSelecionado = false;
     private int raio = 10; // Raio para as bordas arredondadas

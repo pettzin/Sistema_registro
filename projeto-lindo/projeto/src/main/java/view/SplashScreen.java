@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 public class SplashScreen extends JDialog {
     
     private JLabel mensagemLabel;
-    private boolean teclaPrecionada = false;
     private Timer timer;
     
     public SplashScreen(Frame owner) {
@@ -43,7 +42,6 @@ public class SplashScreen extends JDialog {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                teclaPrecionada = true;
                 if (timer != null) {
                     timer.stop();
                 }

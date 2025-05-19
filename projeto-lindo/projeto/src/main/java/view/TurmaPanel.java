@@ -9,8 +9,6 @@ import model.Turma;
 import view.components.Button;
 import view.components.Input;
 import view.components.RoundedComboBox;
-import view.components.RoundedTextField;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -155,12 +153,6 @@ protected void initializeComponents() {
                 return c;
             }
         });
-    }
-    
-    // Método para configurar botões com tamanho maior
-    private void configurarBotao(Button botao) {
-        botao.setFont(new Font("Arial", Font.BOLD, 14)); // Aumentar fonte do botão
-        botao.setPreferredSize(new Dimension(150, 45)); // Aumentar tamanho do botão
     }
     
     @Override

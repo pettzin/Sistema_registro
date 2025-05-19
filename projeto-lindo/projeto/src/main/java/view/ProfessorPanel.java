@@ -4,9 +4,7 @@ import controller.ProfessorController;
 import model.Professor;
 import view.components.Button;
 import view.components.Input;
-
 import javax.swing.*;
-import java.awt.*;
 
 public class ProfessorPanel extends BasePanel {
     private ProfessorController professorController;

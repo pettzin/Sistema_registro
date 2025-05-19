@@ -6,9 +6,7 @@ import model.Curso;
 import model.Professor;
 import view.components.Button;
 import view.components.Input;
-
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
 public class CursoPanel extends BasePanel {

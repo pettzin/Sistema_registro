@@ -9,9 +9,7 @@ import model.Curso;
 import model.Professor;
 import model.Turma;
 import view.components.Button;
-import view.components.Input;
 import view.components.RoundedTextField;
-
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.text.JTextComponent;
@@ -19,7 +17,6 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,8 +30,6 @@ public class PesquisaPanel extends BasePanel {
     private JComboBox<String> tipoComboBox;
     private JTextArea resultadoArea;
     private Button pesquisarButton;
-
-    private static final Pattern PADRAO_PESQUISA = Pattern.compile("^[a-zA-Z0-9\\s\\.\\-]+$");
 
     public PesquisaPanel(MainFrame mainFrame) {
         super(mainFrame, "Pesquisar");
