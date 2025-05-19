@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("Sistema de Matrícula de Alunos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
+        setSize(1200, 760);
         setLocationRelativeTo(null);
         
         alunoPanel = new AlunoPanel(this);

@@ -495,7 +495,7 @@ public class Input {
                 if (valido) {
                     campoTexto.setBackground(Color.WHITE);
                 } else {
-                    campoTexto.setBackground(new Color(255, 220, 220)); // Rosa claro
+                    campoTexto.setBackground(new Color(255, 255, 255)); 
                 }
             }
         });
@@ -555,7 +555,7 @@ public class Input {
                 if (valido) {
                     campoTexto.setBackground(Color.WHITE);
                 } else {
-                    campoTexto.setBackground(new Color(255, 220, 220)); // Rosa claro
+                    campoTexto.setBackground(new Color(255, 255, 255));
                 }
             }
         });
@@ -581,7 +581,7 @@ public class Input {
                 if (valido) {
                     campoTexto.setBackground(Color.WHITE);
                 } else {
-                    campoTexto.setBackground(new Color(255, 220, 220)); // Rosa claro
+                    campoTexto.setBackground(new Color(255, 255, 255));
                 }
             }
         });
@@ -611,7 +611,7 @@ public class Input {
                 if (valido) {
                     campoTexto.setBackground(Color.WHITE);
                 } else {
-                    campoTexto.setBackground(new Color(255, 220, 220)); // Rosa claro
+                    campoTexto.setBackground(new Color(255, 255, 255)); 
                 }
             }
         });
@@ -643,7 +643,7 @@ public class Input {
                 if (valido) {
                     areaTexto.setBackground(Color.WHITE);
                 } else {
-                    areaTexto.setBackground(new Color(255, 220, 220)); // Rosa claro
+                    areaTexto.setBackground(new Color(255, 255, 255)); 
                 }
             }
         });
@@ -682,7 +682,7 @@ public class Input {
                 if (valido) {
                     areaTexto.setBackground(Color.WHITE);
                 } else {
-                    areaTexto.setBackground(new Color(255, 220, 220)); // Rosa claro
+                    areaTexto.setBackground(new Color(255, 255, 255)); 
                 }
             }
         });

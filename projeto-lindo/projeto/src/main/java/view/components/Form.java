@@ -50,37 +50,48 @@ public class Form extends JPanel {
     }
     
     public JTextField addTextField(int gridx, int gridy, int gridwidth) {
-        RoundedTextField campoTexto = new RoundedTextField(20);
-        addComponent(campoTexto, gridx, gridy, gridwidth);
-        return campoTexto;
-    }
+    // Modificar para usar um tamanho fixo maior
+    RoundedTextField campoTexto = new RoundedTextField(20);
     
-    public <E> JComboBox<E> addComboBox(int gridx, int gridy, int gridwidth) {
-        RoundedComboBox<E> comboBox = new RoundedComboBox<>();
-        addComponent(comboBox, gridx, gridy, gridwidth);
-        return comboBox;
-    }
+    // Definir um tamanho preferido fixo para todos os campos
+    campoTexto.setPreferredSize(new Dimension(300, 30)); // Ajuste este valor conforme necessário
     
-    public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
-        JTextArea areaTexto = new JTextArea(5, 20);
-        areaTexto.setLineWrap(true);
-        
-        // Criar um painel com borda arredondada para o JTextArea
-        JPanel panelTexto = new JPanel(new BorderLayout());
-        panelTexto.setBackground(Color.WHITE);
-        panelTexto.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
-        panelTexto.add(areaTexto, BorderLayout.CENTER);
-        
-        JScrollPane scrollPane = new JScrollPane(areaTexto);
-        scrollPane.setBorder(null);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        
-        panelTexto.add(scrollPane, BorderLayout.CENTER);
-        
-        addComponent(panelTexto, gridx, gridy, gridwidth);
-        return areaTexto;
-    }
+    addComponent(campoTexto, gridx, gridy, gridwidth);
+    return campoTexto;
+}
+
+public <E> JComboBox<E> addComboBox(int gridx, int gridy, int gridwidth) {
+    RoundedComboBox<E> comboBox = new RoundedComboBox<>();
+    
+    // Definir o mesmo tamanho preferido para os comboboxes
+    comboBox.setPreferredSize(new Dimension(300, 30)); // Ajuste este valor conforme necessário
+    
+    addComponent(comboBox, gridx, gridy, gridwidth);
+    return comboBox;
+}
+
+public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
+    JTextArea areaTexto = new JTextArea(5, 20);
+    areaTexto.setLineWrap(true);
+    
+    // Criar um painel com borda arredondada para o JTextArea
+    JPanel panelTexto = new JPanel(new BorderLayout());
+    panelTexto.setBackground(Color.WHITE);
+    panelTexto.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
+    
+    JScrollPane scrollPane = new JScrollPane(areaTexto);
+    scrollPane.setBorder(null);
+    scrollPane.setOpaque(false);
+    scrollPane.getViewport().setOpaque(false);
+    
+    panelTexto.add(scrollPane, BorderLayout.CENTER);
+    
+    // Definir um tamanho preferido fixo para o painel do textarea
+    panelTexto.setPreferredSize(new Dimension(300, 100)); // Ajuste este valor conforme necessário
+    
+    addComponent(panelTexto, gridx, gridy, gridwidth);
+    return areaTexto;
+}
     
     public JPanel createButtonPanel(JButton... botoes) {
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
