@@ -1,3 +1,5 @@
+// RoundedComboBox.java modifications - Aumentando o tamanho
+
 package view.components;
 
 import javax.swing.*;
@@ -13,8 +15,18 @@ public class RoundedComboBox<E> extends JComboBox<E> {
         super();
         setOpaque(false);
         setBorder(new RoundedBorder(Color.BLACK, 1, raio));
-        setPreferredSize(new Dimension(getPreferredSize().width, 35));
+        setPreferredSize(new Dimension(getPreferredSize().width, 45)); // Aumentado para 45
         setBackground(Color.WHITE);
+        setFont(new Font("Arial", Font.PLAIN, 16)); // Fonte maior
+        
+        setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                c.setFont(new Font("Arial", Font.PLAIN, 16));
+                return c;
+            }
+        });
     }
     
     @Override

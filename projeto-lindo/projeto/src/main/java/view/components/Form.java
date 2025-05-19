@@ -1,3 +1,5 @@
+// Form.java modifications
+
 package view.components;
 
 import javax.swing.*;
@@ -9,7 +11,7 @@ public class Form extends JPanel {
     
     private GridBagConstraints gbc;
     private Color corFundo = new Color(220, 220, 220); // Cor de fundo cinza claro
-    private Color corLabel = Color.BLACK;
+    private Color corLabel = Color.BLACK; // Cor do label já é preta
     
     public Form() {
         setLayout(new GridBagLayout());
@@ -32,10 +34,13 @@ public class Form extends JPanel {
         gbc.gridx = gridx;
         gbc.gridy = gridy;
         gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.WEST; // Alinha o título à esquerda
         
         JLabel label = new JLabel(texto);
-        label.setForeground(corLabel);
+        label.setForeground(Color.BLACK); // Garante que a cor do texto seja preta
         label.setFont(new Font("Arial", Font.PLAIN, 16));
+        // Sem background para o título
+        label.setOpaque(false);
         add(label, gbc);
         
         return label;
@@ -50,48 +55,48 @@ public class Form extends JPanel {
     }
     
     public JTextField addTextField(int gridx, int gridy, int gridwidth) {
-    // Modificar para usar um tamanho fixo maior
-    RoundedTextField campoTexto = new RoundedTextField(20);
-    
-    // Definir um tamanho preferido fixo para todos os campos
-    campoTexto.setPreferredSize(new Dimension(300, 30)); // Ajuste este valor conforme necessário
-    
-    addComponent(campoTexto, gridx, gridy, gridwidth);
-    return campoTexto;
-}
+        // Modificar para usar um tamanho fixo maior
+        RoundedTextField campoTexto = new RoundedTextField(20);
+        
+        // Definir um tamanho preferido maior para todos os campos
+        campoTexto.setPreferredSize(new Dimension(350, 40)); // Aumentado de 300x30 para 350x40
+        
+        addComponent(campoTexto, gridx, gridy, gridwidth);
+        return campoTexto;
+    }
 
-public <E> JComboBox<E> addComboBox(int gridx, int gridy, int gridwidth) {
-    RoundedComboBox<E> comboBox = new RoundedComboBox<>();
-    
-    // Definir o mesmo tamanho preferido para os comboboxes
-    comboBox.setPreferredSize(new Dimension(300, 30)); // Ajuste este valor conforme necessário
-    
-    addComponent(comboBox, gridx, gridy, gridwidth);
-    return comboBox;
-}
+    public <E> JComboBox<E> addComboBox(int gridx, int gridy, int gridwidth) {
+        RoundedComboBox<E> comboBox = new RoundedComboBox<>();
+        
+        // Definir o mesmo tamanho preferido maior para os comboboxes
+        comboBox.setPreferredSize(new Dimension(350, 40)); // Aumentado de 300x30 para 350x40
+        
+        addComponent(comboBox, gridx, gridy, gridwidth);
+        return comboBox;
+    }
 
-public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
-    JTextArea areaTexto = new JTextArea(5, 20);
-    areaTexto.setLineWrap(true);
-    
-    // Criar um painel com borda arredondada para o JTextArea
-    JPanel panelTexto = new JPanel(new BorderLayout());
-    panelTexto.setBackground(Color.WHITE);
-    panelTexto.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
-    
-    JScrollPane scrollPane = new JScrollPane(areaTexto);
-    scrollPane.setBorder(null);
-    scrollPane.setOpaque(false);
-    scrollPane.getViewport().setOpaque(false);
-    
-    panelTexto.add(scrollPane, BorderLayout.CENTER);
-    
-    // Definir um tamanho preferido fixo para o painel do textarea
-    panelTexto.setPreferredSize(new Dimension(300, 100)); // Ajuste este valor conforme necessário
-    
-    addComponent(panelTexto, gridx, gridy, gridwidth);
-    return areaTexto;
-}
+    public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
+        JTextArea areaTexto = new JTextArea(5, 20);
+        areaTexto.setLineWrap(true);
+        
+        // Criar um painel com borda arredondada para o JTextArea
+        JPanel panelTexto = new JPanel(new BorderLayout());
+        panelTexto.setBackground(Color.WHITE);
+        panelTexto.setBorder(new RoundedBorder(Color.BLACK, 1, 10));
+        
+        JScrollPane scrollPane = new JScrollPane(areaTexto);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        
+        panelTexto.add(scrollPane, BorderLayout.CENTER);
+        
+        // Definir um tamanho preferido maior para o painel do textarea
+        panelTexto.setPreferredSize(new Dimension(350, 120)); // Aumentado de 300x100 para 350x120
+        
+        addComponent(panelTexto, gridx, gridy, gridwidth);
+        return areaTexto;
+    }
     
     public JPanel createButtonPanel(JButton... botoes) {
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -100,6 +105,11 @@ public JTextArea addTextArea(int gridx, int gridy, int gridwidth) {
         for (JButton botao : botoes) {
             painelBotoes.add(botao);
         }
+        
+        // Para garantir que os botões fiquem no canto inferior direito
+        // Adicione este painel usando constraints específicas no seu layout principal
+        // Por exemplo: addComponent(painelBotoes, 0, ultimaLinha, 2);
+        // onde ultimaLinha é a última linha do seu formulário
         
         return painelBotoes;
     }

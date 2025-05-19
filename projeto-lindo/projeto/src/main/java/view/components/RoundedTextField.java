@@ -1,3 +1,5 @@
+// Modificações para RoundedTextField.java
+
 package view.components;
 
 import javax.swing.*;
@@ -13,7 +15,8 @@ public class RoundedTextField extends JTextField {
         super(colunas);
         setOpaque(false);
         setBorder(new RoundedBorder(Color.BLACK, 1, raio));
-        setPreferredSize(new Dimension(getPreferredSize().width, 35));
+        setPreferredSize(new Dimension(getPreferredSize().width, 45)); // Aumentado para 45
+        setFont(new Font("Arial", Font.PLAIN, 16)); // Fonte maior
     }
     
     @Override

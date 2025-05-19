@@ -8,10 +8,11 @@ import java.awt.geom.RoundRectangle2D;
 
 public class Button extends JButton {
     
-    private Color corPadrao = new Color(68, 68, 68);
+    // Cores mais vívidas
+    private Color corPadrao = new Color(50, 50, 50); // Cinza mais escuro
     private Color corBorda = new Color(100, 100, 100);
-    private Color corBordaHover = new Color(0, 174, 239);  // Cor de destaque azul
-    private Color corSelecionado = new Color(68, 68, 68);
+    private Color corBordaHover = new Color(0, 200, 255);  // Azul mais vívido
+    private Color corSelecionado = new Color(50, 50, 50);
     private Color corTexto = Color.WHITE;
     private boolean estaSelecionado = false;
     private int raio = 10; // Raio para as bordas arredondadas
@@ -98,15 +99,19 @@ public class Button extends JButton {
         botao.setMaximumSize(new Dimension(200, 50));
         botao.setMinimumSize(new Dimension(200, 50));
         botao.setHorizontalAlignment(SwingConstants.CENTER);
-        botao.setBackground(new Color(68, 68, 68));
+        botao.setBackground(new Color(50, 50, 50)); // Cinza mais escuro
         botao.setForeground(Color.WHITE);
         return botao;
     }
     
-    // Método para criar um botão de ação padrão
+    // Método para criar um botão de ação padrão com cores mais vívidas
     public static Button createActionButton(String texto, Color corFundo) {
-        Button botao = new Button(texto, corFundo, new Color(0, 0, 0), new Color(0, 174, 239), Color.WHITE);
-        botao.setPreferredSize(new Dimension(120, 35));
+        // Tornar a cor mais vívida
+        float[] hsb = Color.RGBtoHSB(corFundo.getRed(), corFundo.getGreen(), corFundo.getBlue(), null);
+        Color corMaisVivida = Color.getHSBColor(hsb[0], Math.min(1.0f, hsb[1] * 1.3f), Math.min(1.0f, hsb[2] * 1.2f));
+        
+        Button botao = new Button(texto, corMaisVivida, new Color(0, 0, 0), new Color(0, 200, 255), Color.WHITE);
+        botao.setPreferredSize(new Dimension(120, 40)); // Botões um pouco maiores
         return botao;
     }
 }
