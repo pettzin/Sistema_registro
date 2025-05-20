@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -175,7 +176,7 @@ public class PesquisaPanel extends BasePanel {
                 sb.append("Email: ").append(aluno.getEmail() != null ? aluno.getEmail() : "Não informado").append("\n");
                 sb.append("Telefone: ").append(aluno.getTelefone() != null ? aluno.getTelefone() : "Não informado").append("\n");
                 sb.append("Endereço: ").append(aluno.getEndereco() != null ? aluno.getEndereco() : "Não informado").append("\n");
-
+                
                 // Adicionar a data de criação
                 sb.append("Data de Cadastro: ").append(aluno.getDataCriacao() != null ? aluno.getDataCriacao() : "Não informada").append("\n");
 
@@ -198,7 +199,13 @@ public class PesquisaPanel extends BasePanel {
 
     private void pesquisarTurmas(String termo) {
         try {
+            // Primeiro, buscar por código
             List<Turma> turmas = turmaController.buscarTurmasPorCodigo(termo);
+            
+            // Se não encontrou pelo código, tentar buscar pelo nome
+            if (turmas.isEmpty()) {
+                turmas = buscarTurmasPorNome(termo);
+            }
 
             if (turmas.isEmpty()) {
                 resultadoArea.setText("Nenhuma turma encontrada.");
@@ -232,6 +239,27 @@ public class PesquisaPanel extends BasePanel {
             resultadoArea.setText(sb.toString());
         } catch (Exception e) {
             throw new RuntimeException("Erro ao pesquisar turmas: " + e.getMessage(), e);
+        }
+    }
+    
+    // Método auxiliar para buscar turmas por nome
+    private List<Turma> buscarTurmasPorNome(String nome) {
+        try {
+            // Buscar todas as turmas
+            List<Turma> todasTurmas = turmaController.buscarTodasTurmas();
+            List<Turma> turmasFiltradas = new ArrayList<>();
+            
+            // Filtrar as turmas pelo nome (case insensitive)
+            for (Turma turma : todasTurmas) {
+                if (turma.getNome() != null && turma.getNome().toLowerCase().contains(nome.toLowerCase())) {
+                    turmasFiltradas.add(turma);
+                }
+            }
+            
+            return turmasFiltradas;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar turmas por nome: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
