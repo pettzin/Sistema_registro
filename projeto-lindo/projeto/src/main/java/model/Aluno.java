@@ -92,4 +92,15 @@ public class Aluno {
     public String toString() {
         return nome;
     }
+    
+    private String dataCriacao; // Formato: dd/MM/yyyy
+
+    // Adicionar getter e setter para o novo atributo
+    public String getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(String dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 }

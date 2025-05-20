@@ -176,6 +176,9 @@ public class PesquisaPanel extends BasePanel {
                 sb.append("Telefone: ").append(aluno.getTelefone() != null ? aluno.getTelefone() : "Não informado").append("\n");
                 sb.append("Endereço: ").append(aluno.getEndereco() != null ? aluno.getEndereco() : "Não informado").append("\n");
 
+                // Adicionar a data de criação
+                sb.append("Data de Cadastro: ").append(aluno.getDataCriacao() != null ? aluno.getDataCriacao() : "Não informada").append("\n");
+
                 if (aluno.getTurma() != null) {
                     sb.append("Turma: ").append(aluno.getTurma().getCodigo()).append(" - ").append(aluno.getTurma().getNome()).append("\n");
 

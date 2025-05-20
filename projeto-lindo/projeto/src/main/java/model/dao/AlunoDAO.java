@@ -29,7 +29,7 @@ public class AlunoDAO {
             
             if (!alunoExiste) {
                 // Inserir novo aluno
-                String sql = "INSERT INTO Aluno (matricula, nome, cpf, genero, email, telefone, endereco) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO Aluno (matricula, nome, cpf, genero, email, telefone, endereco, data_criacao) VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())";
                 stmt = conn.prepareStatement(sql);
                 
                 stmt.setString(1, aluno.getMatricula());
@@ -306,6 +306,14 @@ public class AlunoDAO {
         aluno.setEmail(rs.getString("email"));
         aluno.setTelefone(rs.getString("telefone"));
         aluno.setEndereco(rs.getString("endereco"));
+
+        // Recuperar a data de criação
+        java.sql.Date dataCriacao = rs.getDate("data_criacao");
+        if (dataCriacao != null) {
+            // Converter para o formato desejado (dd/MM/yyyy)
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+            aluno.setDataCriacao(sdf.format(dataCriacao));
+        }
         
         return aluno;
     }
