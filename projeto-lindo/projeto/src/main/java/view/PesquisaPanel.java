@@ -137,6 +137,19 @@ public class PesquisaPanel extends BasePanel {
         }
     }
 
+    // Método auxiliar para formatar CPF
+    private String formatarCPF(String cpf) {
+        if (cpf == null || cpf.length() != 11) {
+            return cpf; // Retorna o CPF original se for nulo ou não tiver 11 dígitos
+        }
+        
+        // Formata o CPF no padrão 111.111.111-11
+        return cpf.substring(0, 3) + "." + 
+               cpf.substring(3, 6) + "." + 
+               cpf.substring(6, 9) + "-" + 
+               cpf.substring(9);
+    }
+
     private void pesquisarAlunos(String termo) {
         try {
             List<Aluno> alunos = alunoController.buscarAlunosPorNome(termo);
@@ -171,7 +184,7 @@ public class PesquisaPanel extends BasePanel {
             for (Aluno aluno : alunos) {
                 sb.append("Matrícula: ").append(aluno.getMatricula() != null ? aluno.getMatricula() : "Não informada").append("\n");
                 sb.append("Nome: ").append(aluno.getNome()).append("\n");
-                sb.append("CPF: ").append(aluno.getCpf()).append("\n");
+                sb.append("CPF: ").append(formatarCPF(aluno.getCpf())).append("\n");
                 sb.append("Gênero: ").append(aluno.getGenero() != null ? aluno.getGenero() : "Não informado").append("\n");
                 sb.append("Email: ").append(aluno.getEmail() != null ? aluno.getEmail() : "Não informado").append("\n");
                 sb.append("Telefone: ").append(aluno.getTelefone() != null ? aluno.getTelefone() : "Não informado").append("\n");
@@ -312,7 +325,7 @@ public class PesquisaPanel extends BasePanel {
 
             for (Professor professor : professores) {
                 sb.append("Nome: ").append(professor.getNome()).append("\n");
-                sb.append("CPF: ").append(professor.getCpf()).append("\n");
+                sb.append("CPF: ").append(formatarCPF(professor.getCpf())).append("\n");
                 sb.append("Email: ").append(professor.getEmail() != null ? professor.getEmail() : "Não informado").append("\n");
                 sb.append("Telefone: ").append(professor.getTelefone() != null ? professor.getTelefone() : "Não informado").append("\n");
                 sb.append("Endereço: ").append(professor.getEndereco()).append("\n");
