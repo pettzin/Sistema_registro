@@ -48,7 +48,7 @@ Algumas entidades do sistema:
 - **Turma**: código, nome, período, capacidade, data de início e fim  
 - **Matrícula**: ID, data da matrícula
 
-⚙️ Configuração do Banco de Dados
+## ⚙️ Configuração do Banco de Dados
 
 Para conectar-se corretamente:
 
