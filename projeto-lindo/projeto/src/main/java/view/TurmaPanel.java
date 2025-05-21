@@ -176,32 +176,49 @@ protected void initializeComponents() {
     }
     
     private void adicionarAluno() {
-        String cpf = JOptionPane.showInputDialog(this, "Digite o CPF do aluno:");
-        if (cpf != null && !cpf.isEmpty()) {
-            try {
-                // Remover formatação do CPF
-                cpf = cpf.replaceAll("[^0-9]", "");
-                Aluno aluno = alunoController.buscarAlunoPorCpf(cpf);
-                if (aluno != null) {
-                    // Verificar se o aluno já está na lista
-                    boolean alunoJaAdicionado = false;
-                    for (int i = 0; i < alunosListModel.size(); i++) {
-                        if (alunosListModel.getElementAt(i).getMatricula().equals(aluno.getMatricula())) {
-                            alunoJaAdicionado = true;
-                            break;
+        // Criar um JTextField para entrada do CPF com formatação
+        JTextField cpfField = new JTextField(14);
+        Input.aplicarMascaraCPF(cpfField);
+        
+        // Criar um painel para o diálogo
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel("Digite o CPF do aluno:"), BorderLayout.NORTH);
+        panel.add(cpfField, BorderLayout.CENTER);
+        
+        // Mostrar o diálogo com o campo formatado
+        int result = JOptionPane.showConfirmDialog(this, panel, "Adicionar Aluno", 
+                                                  JOptionPane.OK_CANCEL_OPTION, 
+                                                  JOptionPane.PLAIN_MESSAGE);
+        
+        // Processar o resultado
+        if (result == JOptionPane.OK_OPTION) {
+            String cpf = cpfField.getText();
+            if (cpf != null && !cpf.isEmpty()) {
+                try {
+                    // Remover formatação do CPF para busca
+                    String cpfSemFormatacao = cpf.replaceAll("[^0-9]", "");
+                    Aluno aluno = alunoController.buscarAlunoPorCpf(cpfSemFormatacao);
+                    if (aluno != null) {
+                        // Verificar se o aluno já está na lista
+                        boolean alunoJaAdicionado = false;
+                        for (int i = 0; i < alunosListModel.size(); i++) {
+                            if (alunosListModel.getElementAt(i).getMatricula().equals(aluno.getMatricula())) {
+                                alunoJaAdicionado = true;
+                                break;
+                            }
                         }
-                    }
-                    
-                    if (!alunoJaAdicionado) {
-                        alunosListModel.addElement(aluno);
+                        
+                        if (!alunoJaAdicionado) {
+                            alunosListModel.addElement(aluno);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Este aluno já foi adicionado à turma!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(this, "Este aluno já foi adicionado à turma!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Aluno não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Aluno não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Erro ao adicionar aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Erro ao adicionar aluno: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
