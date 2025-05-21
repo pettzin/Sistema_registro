@@ -73,7 +73,6 @@ Abra o projeto no NetBeans OU VSCode.
 
 Execute a classe principal (Main) para iniciar a aplicação
 
----
 
 ## 🧑‍💻 Contribuidores
 
@@ -83,4 +82,5 @@ Execute a classe principal (Main) para iniciar a aplicação
 - [Renan Alves](https://github.com/Renan01032) 
 - [Veronica Neves](https://github.com/VeehNB)
 
+---
 > Este projeto foi desenvolvido como parte de um trabalho acadêmico e visa demonstrar o uso de boas práticas em Java, incluindo o uso de Swing, organização em camadas (MVC), e interação com banco de dados.
