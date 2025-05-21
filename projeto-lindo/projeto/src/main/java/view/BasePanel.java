@@ -20,16 +20,22 @@ public abstract class BasePanel extends JPanel {
         setBackground(new Color(220, 220, 220));
         
         // Criar o painel de título
-        JPanel painelTitulo = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Alterado para LEFT
+        JPanel painelTitulo = new JPanel(new BorderLayout());
         painelTitulo.setBackground(new Color(220, 220, 220));
-        painelTitulo.setPreferredSize(new Dimension(getWidth(), 60));
-        
+        painelTitulo.setPreferredSize(new Dimension(getWidth(), 100)); // Increased height
+
+        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        labelPanel.setBackground(new Color(220, 220, 220));
+
         JLabel tituloLabel = new JLabel(titulo);
         tituloLabel.setFont(new Font("Arial", Font.BOLD, 20));
         tituloLabel.setForeground(Color.BLACK);
-        painelTitulo.add(Box.createHorizontalStrut(20));
-        painelTitulo.add(Box.createVerticalStrut(20)); 
-        painelTitulo.add(tituloLabel);
+        labelPanel.add(Box.createHorizontalStrut(20));
+        labelPanel.add(tituloLabel);
+
+        // Add empty space at the top and the label panel at the bottom
+        painelTitulo.add(Box.createVerticalStrut(40), BorderLayout.NORTH);
+        painelTitulo.add(labelPanel, BorderLayout.CENTER);
         
         // Criar o painel de formulário
         form = new Form();
