@@ -32,7 +32,7 @@ O sistema foi criado para facilitar o gerenciamento de **alunos**, **professores
 ## 🧑‍💻 Contribuidores
 
 - [Matheus Domeneghetti](https://github.com/Sarito333)
-- [Natan Gleison] (https://github.com/Natan-gleison)
+- [Natan Gleison].(https://github.com/Natan-gleison)
 - [Petterson Machado](https://github.com/pettzin)
 - [Renan Alves](https://github.com/Renan01032) 
 - [Veronica Neves](https://github.com/VeehNB)
