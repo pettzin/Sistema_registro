@@ -48,9 +48,30 @@ Algumas entidades do sistema:
 - **Turma**: código, nome, período, capacidade, data de início e fim  
 - **Matrícula**: ID, data da matrícula
 
-## ▶️ Como Executar
+⚙️ Configuração do Banco de Dados
 
-Para iniciar o projeto, basta abrir o projeto no **NetBeans** e executar a classe principal (`Main`). O sistema já está pronto para uso, com interface gráfica e menus interativos.
+Para conectar-se corretamente:
+
+Coloque o arquivo DBConnection.java na pasta connection do projeto.
+
+Esse arquivo gerencia a conexão com o banco de dados.
+
+Abra o arquivo env_texto.txt (fornecido no projeto).
+
+Ele contém os dados necessários para configurar a conexão (host, nome do banco, usuário e senha) no MySQL Workbench.
+
+
+⚠️ O arquivo DBConnection.java não está incluso no repositório por motivos de segurança.
+⚠️ O banco de dados já está criado e operacional — basta configurar a conexão.
+
+▶️ Como Executar
+Copie o arquivo DBConnection.java para a pasta connection.
+
+Insira os dados de acesso do banco conforme o env_texto.txt.
+
+Abra o projeto no NetBeans OU VSCode.
+
+Execute a classe principal (Main) para iniciar a aplicação
 
 ---
 
