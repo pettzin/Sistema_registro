@@ -30,14 +30,6 @@ O sistema foi criado para facilitar o gerenciamento de **alunos**, **professores
 - **Interface gráfica (Swing)**
 - **Validações de campos e dados**
 
-## 🧑‍💻 Contribuidores
-
-- [Matheus Domeneghetti](https://github.com/Sarito333)
-- [Natan Gleison](https://github.com/Natan-gleison)
-- [Petterson Machado](https://github.com/pettzin)
-- [Renan Alves](https://github.com/Renan01032) 
-- [Veronica Neves](https://github.com/VeehNB)
-
 ## 📂 Estrutura de Dados
 
 Algumas entidades do sistema:
@@ -82,5 +74,13 @@ Abra o projeto no NetBeans OU VSCode.
 Execute a classe principal (Main) para iniciar a aplicação
 
 ---
+
+## 🧑‍💻 Contribuidores
+
+- [Matheus Domeneghetti](https://github.com/Sarito333)
+- [Natan Gleison](https://github.com/Natan-gleison)
+- [Petterson Machado](https://github.com/pettzin)
+- [Renan Alves](https://github.com/Renan01032) 
+- [Veronica Neves](https://github.com/VeehNB)
 
 > Este projeto foi desenvolvido como parte de um trabalho acadêmico e visa demonstrar o uso de boas práticas em Java, incluindo o uso de Swing, organização em camadas (MVC), e interação com banco de dados.
