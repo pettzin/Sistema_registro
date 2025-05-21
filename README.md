@@ -52,27 +52,25 @@ Algumas entidades do sistema:
 
 Para conectar-se corretamente:
 
-🔄 Coloque o arquivo DBConnection.java na pasta connection do projeto.
+1. 🔄 Coloque o arquivo DBConnection.java na pasta connection do projeto.
 Esse arquivo gerencia a conexão com o banco de dados.
 
-📝 Abra o arquivo env_texto.txt (fornecido no projeto).
+2. 📝 Abra o arquivo env_texto.txt (fornecido no projeto).
 Ele contém os dados necessários para configurar a conexão no MySQL Workbench, como:
 
-Host
+- Host
 
-Nome do banco
+- Nome do banco
 
-Usuário
+- Usuário
 
-Senha
-
-⚙️ Atualize o arquivo DBConnection.java com as informações do env_texto.txt.
+- Senha
 
 ⚠️ Atenção:
 
-O arquivo DBConnection.java não está incluso no repositório por motivos de segurança.
+- O arquivo DBConnection.java não está incluso no repositório por motivos de segurança.
 
-O banco de dados já está criado e operacional — basta configurar a conexão corretamente.
+- O banco de dados já está criado e operacional — basta configurar a conexão corretamente.
 
 ## ▶️ Como Executar
 Copie o arquivo DBConnection.java para a pasta connection.
