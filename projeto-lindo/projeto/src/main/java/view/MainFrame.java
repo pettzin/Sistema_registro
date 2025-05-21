@@ -71,18 +71,23 @@ public class MainFrame extends JFrame {
         professorButton.addActionListener(e -> selecionarBotao(3, professorPanel));
         pesquisarButton.addActionListener(e -> selecionarBotao(4, pesquisaPanel));
         
-        // Adicionar botões à barra lateral com espaçamento
-        sidebar.add(Box.createVerticalStrut(10));
+        // Adicionar espaço no topo para abaixar os botões (reduzido para subir os botões)
+        sidebar.add(Box.createVerticalStrut(40)); // Reduzido de 100 para 40
+        
+        // Adicionar os primeiros botões com espaçamento normal
         sidebar.add(alunoButton);
-        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(Box.createVerticalStrut(15));
         sidebar.add(cursoButton);
-        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(Box.createVerticalStrut(15));
         sidebar.add(turmaButton);
-        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(Box.createVerticalStrut(15));
         sidebar.add(professorButton);
-        sidebar.add(Box.createVerticalStrut(10));
-        sidebar.add(pesquisarButton);
+        
+        // Adicionar espaço flexível para empurrar o botão Pesquisar para o final
         sidebar.add(Box.createVerticalGlue());
+        
+        // Adicionar o botão Pesquisar no final
+        sidebar.add(pesquisarButton);
         
         return sidebar;
     }
