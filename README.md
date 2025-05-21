@@ -12,8 +12,9 @@ O sistema foi criado para facilitar o gerenciamento de **alunos**, **professores
 - NetBeans IDE
 - Swing (`javax.swing.*`)
 - AWT (`java.awt.*`)
-- JDBC (com padrão Singleton para conexão com banco)
+- JDBC (MySQL)
 - Arquitetura MVC
+- MySQL Workbench
 
 ## 🧩 Funcionalidades Principais
 
