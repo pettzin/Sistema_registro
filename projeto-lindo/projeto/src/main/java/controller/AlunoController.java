@@ -3,18 +3,47 @@ package controller;
 import model.Aluno;
 import model.Turma;
 import model.dao.AlunoDAO;
+import model.dao.TurmaDAO;
 
 import java.util.List;
 
 public class AlunoController {
     private AlunoDAO alunoDAO;
+    private TurmaDAO turmaDAO;
 
     public AlunoController() {
         this.alunoDAO = new AlunoDAO();
+        this.turmaDAO = new TurmaDAO();
     }
 
     public void salvarAluno(Aluno aluno) {
         try {
+            // Verificar se o aluno está sendo matriculado em uma turma
+            if (aluno.getTurma() != null) {
+                // Buscar a turma atualizada do banco de dados para ter a contagem correta de alunos
+                Turma turmaAtualizada = turmaDAO.buscarPorCodigo(aluno.getTurma().getCodigo());
+                
+                // Verificar se a turma já atingiu sua capacidade máxima
+                int alunosMatriculados = turmaAtualizada.getAlunos().size();
+                int capacidadeMaxima = turmaAtualizada.getCapacidade();
+                
+                // Se o aluno já está na turma (caso de edição), não contar ele duas vezes
+                boolean alunoJaMatriculado = false;
+                for (Aluno a : turmaAtualizada.getAlunos()) {
+                    if (a.getMatricula() != null && a.getMatricula().equals(aluno.getMatricula())) {
+                        alunoJaMatriculado = true;
+                        break;
+                    }
+                }
+                
+                // Se o aluno não está na turma e a turma já está cheia
+                if (!alunoJaMatriculado && alunosMatriculados >= capacidadeMaxima) {
+                    throw new RuntimeException("Não é possível matricular o aluno. A turma " + 
+                                              turmaAtualizada.getNome() + " já atingiu sua capacidade máxima de " + 
+                                              capacidadeMaxima + " alunos.");
+                }
+            }
+            
             alunoDAO.salvar(aluno);
         } catch (Exception e) {
             System.err.println("Erro ao salvar aluno: " + e.getMessage());
@@ -87,13 +116,19 @@ public class AlunoController {
 
     public boolean matricularAlunoEmTurma(Aluno aluno, Turma turma) {
         try {
-            if (turma.getAlunos().size() < turma.getCapacidade()) {
-                aluno.setTurma(turma);
-                turma.adicionarAluno(aluno);
-                alunoDAO.salvar(aluno);
-                return true;
+            // Buscar a turma atualizada do banco de dados
+            TurmaDAO turmaDAO = new TurmaDAO();
+            Turma turmaAtualizada = turmaDAO.buscarPorCodigo(turma.getCodigo());
+            
+            // Verificar se a turma já atingiu sua capacidade máxima
+            if (turmaAtualizada.getAlunos().size() >= turmaAtualizada.getCapacidade()) {
+                return false;
             }
-            return false;
+            
+            aluno.setTurma(turma);
+            turma.adicionarAluno(aluno);
+            alunoDAO.salvar(aluno);
+            return true;
         } catch (Exception e) {
             System.err.println("Erro ao matricular aluno em turma: " + e.getMessage());
             return false;

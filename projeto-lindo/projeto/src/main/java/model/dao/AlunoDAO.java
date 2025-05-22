@@ -57,30 +57,54 @@ public class AlunoDAO {
                 stmt.executeUpdate();
             }
             
-            // Se o aluno tiver uma turma, inserir na tabela Turma
+            // Se o aluno tiver uma turma, verificar a capacidade e inserir na tabela Matricula
             if (aluno.getTurma() != null) {
-                // Verificar se já existe uma matrícula para este aluno e turma
-                String verificarMatriculaSql = "SELECT COUNT(*) FROM Matricula WHERE matricula_aluno = ? AND codigo_turma = ?";
-                stmt = conn.prepareStatement(verificarMatriculaSql);
-                stmt.setString(1, aluno.getMatricula());
-                stmt.setString(2, aluno.getTurma().getCodigo());
+                // Verificar a capacidade da turma
+                String verificarCapacidadeSql = "SELECT t.capacidade_maxima, COUNT(m.matricula_aluno) as alunos_matriculados " +
+                                               "FROM Turma t " +
+                                               "LEFT JOIN Matricula m ON t.codigo = m.codigo_turma " +
+                                               "WHERE t.codigo = ? " +
+                                               "GROUP BY t.codigo, t.capacidade_maxima";
+                
+                stmt = conn.prepareStatement(verificarCapacidadeSql);
+                stmt.setString(1, aluno.getTurma().getCodigo());
                 
                 rs = stmt.executeQuery();
-                boolean matriculaExiste = rs.next() && rs.getInt(1) > 0;
-                rs.close();
-                stmt.close();
                 
-                if (!matriculaExiste) {
-                    // Inserir nova matrícula
-                    String inserirMatriculaSql = "INSERT INTO Matricula (matricula_aluno, codigo_turma, id_curso, data_matricula) VALUES (?, ?, ?, CURDATE())";
-                    stmt = conn.prepareStatement(inserirMatriculaSql);
+                if (rs.next()) {
+                    int capacidadeMaxima = rs.getInt("capacidade_maxima");
+                    int alunosMatriculados = rs.getInt("alunos_matriculados");
                     
+                    // Verificar se o aluno já está matriculado nesta turma
+                    String verificarMatriculaSql = "SELECT COUNT(*) FROM Matricula WHERE matricula_aluno = ? AND codigo_turma = ?";
+                    stmt.close();
+                    stmt = conn.prepareStatement(verificarMatriculaSql);
                     stmt.setString(1, aluno.getMatricula());
                     stmt.setString(2, aluno.getTurma().getCodigo());
-                    stmt.setInt(3, aluno.getTurma().getCurso().getId());
                     
-                    stmt.executeUpdate();
+                    ResultSet rsMatricula = stmt.executeQuery();
+                    boolean alunoJaMatriculado = rsMatricula.next() && rsMatricula.getInt(1) > 0;
+                    rsMatricula.close();
+                    stmt.close();
+                    
+                    // Se o aluno não estiver matriculado e a turma estiver cheia, lançar exceção
+                    if (!alunoJaMatriculado && alunosMatriculados >= capacidadeMaxima) {
+                        throw new RuntimeException("Não é possível matricular o aluno. A turma já atingiu sua capacidade máxima de " + capacidadeMaxima + " alunos.");
+                    }
+                    
+                    // Se o aluno não estiver matriculado, inserir na tabela Matricula
+                    if (!alunoJaMatriculado) {
+                        String inserirMatriculaSql = "INSERT INTO Matricula (matricula_aluno, codigo_turma, id_curso, data_matricula) VALUES (?, ?, ?, CURDATE())";
+                        stmt = conn.prepareStatement(inserirMatriculaSql);
+                        
+                        stmt.setString(1, aluno.getMatricula());
+                        stmt.setString(2, aluno.getTurma().getCodigo());
+                        stmt.setInt(3, aluno.getTurma().getCurso().getId());
+                        
+                        stmt.executeUpdate();
+                    }
                 }
+                rs.close();
             }
         } catch (SQLException e) {
             System.err.println("Erro ao salvar aluno: " + e.getMessage());
