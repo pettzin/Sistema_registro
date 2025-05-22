@@ -295,7 +295,18 @@ public class PesquisaPanel extends BasePanel {
                     sb.append("Professor: ").append(curso.getProfessor().getNome()).append("\n");
                 }
 
-                sb.append("Turmas: ").append(curso.getTurmas().size()).append("\n");
+                List<Turma> turmas = curso.getTurmas();
+                sb.append("Turmas: ").append(turmas.size()).append("\n");
+                
+                if (!turmas.isEmpty()) {
+                    sb.append("Lista de Turmas:\n");
+                    for (Turma turma : turmas) {
+                        sb.append(" - ").append(turma.getNome()).append(" (Código: ").append(turma.getCodigo()).append(")\n");
+                    }
+                } else {
+                    sb.append("Nenhuma turma cadastrada para este curso.\n");
+                }
+                
                 sb.append("\n");
             }
 

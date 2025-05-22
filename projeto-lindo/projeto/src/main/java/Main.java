@@ -7,14 +7,11 @@ public class Main {
         }
         
         javax.swing.SwingUtilities.invokeLater(() -> {
-            // Criar o frame principal primeiro (mas não mostrar ainda)
             view.MainFrame frame = new view.MainFrame();
-            
-            // Mostrar a tela de splash primeiro
+
             view.SplashScreen splashScreen = new view.SplashScreen(frame);
             splashScreen.mostrarSplash();
             
-            // Depois mostrar o frame principal
             frame.setVisible(true);
         });
     }

@@ -315,7 +315,7 @@ public class Input {
      * @param cpf O CPF para validar (pode estar formatado)
      * @return Verdadeiro se o CPF for matematicamente válido, falso caso contrário
      */
-    /*public static boolean isCPFValido(String cpf) {
+    public static boolean isCPFValido(String cpf) {
         // Primeiro, verifica se corresponde ao padrão básico
         if (!PADRAO_CPF.matcher(cpf).matches()) {
             return false;
@@ -336,7 +336,6 @@ public class Input {
             return false;
         }
 
-        // Calcula e verifica o primeiro dígito verificador
         int soma1 = 0;
         for (int i = 0; i < 9; i++) {
             soma1 += (apenasDigitosCPF.charAt(i) - '0') * (10 - i);
@@ -393,9 +392,9 @@ public class Input {
             case EMAIL:
                 valido = isEmailValido(texto);
                 break;
-            /*case CPF:
+            case CPF:
                 valido = isCPFValido(texto);
-                break;*/
+                break;
             case DATA:
                 valido = isDataValida(texto);
                 break;
@@ -470,9 +469,9 @@ public class Input {
                     case EMAIL:
                         valido = texto.isEmpty() || isEmailValido(texto);
                         break;
-                    /*case CPF:
+                    case CPF:
                         valido = texto.isEmpty() || isCPFValido(texto);
-                        break;*/
+                        break;
                     case DATA:
                         valido = texto.isEmpty() || isDataValida(texto);
                         break;
@@ -530,9 +529,9 @@ public class Input {
                     case EMAIL:
                         valido = texto.isEmpty() || isEmailValido(texto);
                         break;
-                    /*case CPF:
+                    case CPF:
                         valido = texto.isEmpty() || isCPFValido(texto);
-                        break;*/
+                        break;
                     case DATA:
                         valido = texto.isEmpty() || isDataValida(texto);
                         break;
