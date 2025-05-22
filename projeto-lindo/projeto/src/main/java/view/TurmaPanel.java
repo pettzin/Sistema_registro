@@ -83,9 +83,10 @@ protected void initializeComponents() {
     form.addLabel("Alunos", 0, 6);
     alunosListModel = new DefaultListModel<>();
     alunosList = new JList<>(alunosListModel);
-    alunosList.setFont(new Font("Arial", Font.PLAIN, 16)); // Aumentar fonte da lista
+    alunosList.setFont(new Font("Arial", Font.PLAIN, 16)); 
     JScrollPane alunosScrollPane = new JScrollPane(alunosList);
-    alunosScrollPane.setPreferredSize(new Dimension(450, 200)); // Aumentar tamanho da lista
+    alunosScrollPane.setPreferredSize(new Dimension(150, 100)); 
+    alunosScrollPane.setMinimumSize(new Dimension(150, 100));
     form.addComponent(alunosScrollPane, 1, 6, 2);
     
     // Botão para adicionar alunos
