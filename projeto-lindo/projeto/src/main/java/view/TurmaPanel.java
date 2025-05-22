@@ -91,16 +91,20 @@ protected void initializeComponents() {
     
     // Botão para adicionar alunos
     Button adicionarAlunoButton = Button.createActionButton("Adicionar Aluno", new Color(51, 51, 51));
-    adicionarAlunoButton.setPreferredSize(new Dimension(150, 45));
+    adicionarAlunoButton.setPreferredSize(new Dimension(210, 05));
+    adicionarAlunoButton.setMinimumSize(new Dimension(210, 30));
+    adicionarAlunoButton.setMaximumSize(new Dimension(210, 30));
     adicionarAlunoButton.setFont(new Font("Arial", Font.BOLD, 14));
     form.addComponent(adicionarAlunoButton, 1, 7, 1);
-    
+
     // Botão para remover alunos
     Button removerAlunoButton = Button.createActionButton("Remover Aluno", new Color(51, 51, 51));
-    removerAlunoButton.setPreferredSize(new Dimension(150, 45));
+    removerAlunoButton.setPreferredSize(new Dimension(180, 30));
+    removerAlunoButton.setMinimumSize(new Dimension(180, 30));
+    removerAlunoButton.setMaximumSize(new Dimension(180, 30));
     removerAlunoButton.setFont(new Font("Arial", Font.BOLD, 14));
     form.addComponent(removerAlunoButton, 2, 7, 1);
-    
+
     // Botões
     salvarButton = createSaveButton();
     editarButton = createEditButton();
